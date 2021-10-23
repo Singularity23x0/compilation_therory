@@ -1,6 +1,6 @@
 import ply.lex as lex
-# test
-# TODO strings,errors,file read from template on Kuta web,check other formats for data
+
+# TODO file read from template on Kuta web,check other formats for data, string may need clean up
 
 reserved = {
     'if': 'IF',
@@ -39,7 +39,7 @@ t_ignore = ' \t'
 
 
 def t_STRING(t):  # to correct
-    r'\"[^"]*\"'
+    r'"(\\"|[^"])*"'
     t.value = t.value[1:-1]
     return t
 
@@ -76,7 +76,7 @@ def t_comment(t):
 
 def t_error(t):  # to correct add precise info about error
     print("error in line:", t.lexer.lineno, " unknown expression:", t.value.split('\n')[0])
-    t.lexer.skip(1)
+    t.lexer.skip(len(t.value.split('\n')[0]))
 
 
 lexer = lex.lex()
@@ -91,12 +91,12 @@ D4 /= A./B' ; # divide element-wise A with transpose of B
 E1 = [ [ 1, 2, 3],
        [ 4, 5, 6],
        [ 7, 8, 9] ];
-
+0000 awdawa;
 res1 = 60.500;
 res2 = 60.;
 res3 = .500;
 res4 = 60.52E2;
-str = "Hello world";
+str = "Hello\\\\" \\t world";
 
 if (m==n) { 
     if (m >= n) 
