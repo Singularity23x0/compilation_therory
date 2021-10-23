@@ -75,8 +75,8 @@ def t_comment(t):
 
 
 def t_error(t):  # to correct add precise info about error
-    print("error in line:", t.lexer.lineno, " unknown expression:", t.value.split('\n')[0])
-    t.lexer.skip(len(t.value.split('\n')[0]))
+    print("error in line:", t.lexer.lineno, " unknown expression:", t.value.split('\n',1)[0].split(';',1)[0])
+    t.lexer.skip(len(t.value.split('\n',1)[0].split(';',1)[0]))
 
 
 lexer = lex.lex()
@@ -91,7 +91,7 @@ D4 /= A./B' ; # divide element-wise A with transpose of B
 E1 = [ [ 1, 2, 3],
        [ 4, 5, 6],
        [ 7, 8, 9] ];
-0000 awdawa;
+
 res1 = 60.500;
 res2 = 60.;
 res3 = .500;
