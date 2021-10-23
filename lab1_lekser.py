@@ -1,6 +1,7 @@
 import ply.lex as lex
+import sys
 
-# TODO file read from template on Kuta web,check other formats for data, string may need clean up
+# TODO check other formats for data, string may need clean up
 
 reserved = {
     'if': 'IF',
@@ -74,34 +75,25 @@ def t_comment(t):
     t.lexer.lineno += 1
 
 
-def t_error(t):  # to correct add precise info about error
+def t_error(t):
     print("error in line:", t.lexer.lineno, " unknown expression:", t.value.split('\n',1)[0].split(';',1)[0])
     t.lexer.skip(len(t.value.split('\n',1)[0].split(';',1)[0]))
 
 
 lexer = lex.lex()
-text = """A = zeros(5);  # create 5x5 matrix filled with zeros
-B = ones(7);   # create 7x7 matrix filled with ones
-I = eye(10);   # create 10x10 matrix filled with ones on diagonal and zeros elsewhere
-D1 = A.+B' ; # add element-wise A with transpose of B
-D2 -= A.-B' ; # substract element-wise A with transpose of B
-D3 *= A.*B' ; # multiply element-wise A with transpose of B
-D4 /= A./B' ; # divide element-wise A with transpose of B
 
-E1 = [ [ 1, 2, 3],
-       [ 4, 5, 6],
-       [ 7, 8, 9] ];
 
-res1 = 60.500;
-res2 = 60.;
-res3 = .500;
-res4 = 60.52E2;
-str = "Hello\\\\" \\t world";
+if __name__ == '__main__':
 
-if (m==n) { 
-    if (m >= n) 
-        print res;
-}"""
-lexer.input(text)
-for token in lexer:
-    print("(%d): %s(%s)" % (token.lineno, token.type, token.value))
+    try:
+        filename = sys.argv[1] if len(sys.argv) > 1 else "example.txt"
+        file = open(filename, "r")
+    except IOError:
+        print("Cannot open {0} file".format(filename))
+        sys.exit(0)
+
+    text = file.read()
+    lexer.input(text)  # Give the lexer some input
+
+    for token in lexer:
+        print("(%d): %s(%s)" % (token.lineno, token.type, token.value))
