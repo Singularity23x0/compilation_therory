@@ -80,6 +80,7 @@ def t_error(t):
 
 lexer = lex.lex()
 
+
 if __name__ == '__main__':
 
     try:
