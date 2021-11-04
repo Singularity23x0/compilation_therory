@@ -14,4 +14,4 @@ if __name__ == '__main__':
     lexer.input(text)  # Give the lexer some input
 
     for token in lexer:
-        print("(%d): %s (%s)" % (token.lineno, token.type, token.value))
+        print("(%d): %s(%s)" % (token.lineno, token.type, token.value))
