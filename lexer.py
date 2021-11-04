@@ -1,5 +1,4 @@
 import ply.lex as lex
-import sys
 
 # TODO check other formats for data, string may need clean up
 
@@ -17,24 +16,24 @@ reserved = {
     'print': 'PRINT'
 }
 
-tokens = ("MADD", "MDIFF", "MMULT", "MDIV", "AADD", "ADIFF", "AMULT", "ADIV",
-          "R_SMALL_EQUAL", "R_BIGER_EQUAL", "R_NOT_EQUAL", "R_EQUAL", "ID", "INT",
+tokens = ("MTX_SUM", "MTX_DIFFERENCE", "MTX_PRODUCT", "MTX_QUOTIENT", "ADD", "SUBTRACT", "MULTIPLY", "DIVIDE",
+          "SMALLER_OR_EQUAL", "LARGER_OR_EQUAL", "NOT_EQUAL", "EQUAL", "ID", "INT",
           "FLOAT", "STRING") + tuple(reserved.values())
 
 literals = ['+', '-', '*', '/', '(', ')', '[', ']', '{', '}', ',', ';', ':', '\'', '=', '<', '>']
 
-t_MADD = r'\.\+'
-t_MDIFF = r'\.\-'
-t_MMULT = r'\.\*'
-t_MDIV = r'\./'
-t_AADD = r'\+='
-t_ADIFF = r'\-='
-t_AMULT = r'\*='
-t_ADIV = r'/='
-t_R_SMALL_EQUAL = r'<='
-t_R_BIGER_EQUAL = r'>='
-t_R_NOT_EQUAL = r'!='
-t_R_EQUAL = r'=='
+t_MTX_SUM = r'\.\+'
+t_MTX_DIFFERENCE = r'\.\-'
+t_MTX_PRODUCT = r'\.\*'
+t_MTX_QUOTIENT = r'\./'
+t_ADD = r'\+='
+t_SUBTRACT = r'\-='
+t_MULTIPLY = r'\*='
+t_DIVIDE = r'/='
+t_SMALLER_OR_EQUAL = r'<='
+t_LARGER_OR_EQUAL = r'>='
+t_NOT_EQUAL = r'!='
+t_EQUAL = r'=='
 
 t_ignore = ' \t'
 
@@ -76,24 +75,8 @@ def t_comment(t):
 
 
 def t_error(t):
-    print("error in line:", t.lexer.lineno, " unknown expression:", t.value.split('\n',1)[0].split(';',1)[0])
-    t.lexer.skip(len(t.value.split('\n',1)[0].split(';',1)[0]))
+    print("error in line:", t.lexer.lineno, " unknown expression:", t.value.split('\n', 1)[0].split(';', 1)[0])
+    t.lexer.skip(len(t.value.split('\n', 1)[0].split(';', 1)[0]))
 
 
 lexer = lex.lex()
-
-
-if __name__ == '__main__':
-
-    try:
-        filename = sys.argv[1] if len(sys.argv) > 1 else "example.txt"
-        file = open(filename, "r")
-    except IOError:
-        print("Cannot open {0} file".format(filename))
-        sys.exit(0)
-
-    text = file.read()
-    lexer.input(text)  # Give the lexer some input
-
-    for token in lexer:
-        print("(%d): %s(%s)" % (token.lineno, token.type, token.value))
