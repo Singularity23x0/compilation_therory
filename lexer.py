@@ -1,7 +1,5 @@
 import ply.lex as lex
 
-# TODO check other formats for data, string may need clean up
-
 reserved = {
     'if': 'IF',
     'else': 'ELSE',
@@ -38,13 +36,13 @@ t_EQUAL = r'=='
 t_ignore = ' \t'
 
 
-def t_STRING(t):  # to correct
+def t_STRING(t):
     r'"(\\"|[^"])*"'
     t.value = t.value[1:-1]
     return t
 
 
-def t_FLOAT(t):  # modified
+def t_FLOAT(t):
     r'([1-9]\d*|0?)\.\d*(E-?\d+)?'
     if t.value[0] == '.':
         t.value = '0' + t.value
