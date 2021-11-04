@@ -11,7 +11,7 @@ if __name__ == '__main__':
         sys.exit(0)
 
     text = file.read()
-    lexer.input(text)  # Give the lexer some input
+    lexer.input(text)
 
     for token in lexer:
         print("(%d): %s(%s)" % (token.lineno, token.type, token.value))
