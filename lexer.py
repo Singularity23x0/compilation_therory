@@ -43,15 +43,13 @@ def t_STRING(t):
 
 
 def t_FLOAT(t):
-    r'([1-9]\d*|0?)\.\d*(E-?\d+)?'
-    if t.value[0] == '.':
-        t.value = '0' + t.value
+    r'-?(([1-9]\d*|0)\.\d*(E-?\d+)?|\.\d+(E-?\d+)?)'
     t.value = float(t.value)
     return t
 
 
 def t_INT(t):
-    r'[1-9]\d*'
+    r'-?([1-9]\d*|0)'
     t.value = int(t.value)
     return t
 
@@ -68,8 +66,7 @@ def t_newline(t):
 
 
 def t_comment(t):
-    r'\#.*(\n|\Z)'
-    t.lexer.lineno += 1
+    r'\#.*'
 
 
 def t_error(t):
