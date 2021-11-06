@@ -7,8 +7,11 @@ precedence = (
     ('nonasco', 'ELSE'),
     ('left', '+', '-'),
     ('left', '*', '/'),
+    ('right', 'UMINUS'),
     ('left', 'MTX_SUM', 'MTX_DIFFERENCE'),
-    ('left', 'MTX_PRODUCT', 'MTX_QUOTIENT')
+    ('left', 'MTX_PRODUCT', 'MTX_QUOTIENT'),
+    ('right', 'MUMINUS'),
+    ('right', 'TRANS')
 )
 
 
@@ -88,7 +91,7 @@ def p_comparison_operator(p):
 
 def p_number(p):
     """number
-    : - number
+    : - number %prec UMINUS
     | INT
     | FLOAT
     | ID
@@ -111,8 +114,8 @@ def p_arithmetic_operator(p):
 
 def p_matrix(p):
     """matrix
-    : - matrix
-    | matrix '\''
+    : - matrix %prec MUMINUS
+    | matrix '\'' %prec TRANS
     | ID
     | matrix_function
     | matrix_literal
