@@ -9,7 +9,6 @@ precedence = (
     ('right', 'UMINUS'),
     ('left', 'MTX_SUM', 'MTX_DIFFERENCE'),
     ('left', 'MTX_PRODUCT', 'MTX_QUOTIENT'),
-    ('right', 'MUMINUS'),
     ('right', 'TRANS')
 )
 
@@ -57,24 +56,25 @@ def p_conditional(p):
     | for"""
 
 
+def p_element(p):
+    """element : ID
+    | arithmetic_expression
+    | FLOAT
+    | INT
+    | STRING
+    | '-' element %prec UMINUS
+    | element TRANSPOSE %prec TRANS"""
+    # TODO add defined matrix
+
+
 def p_expression(p):
     """expression : logical_expression
         | assignment
-        | number
-        | matrix
-        | string"""
-    # """expression : logical_expression
-    # | assignment
-    # | arithmetic_expression
-    # | matrix_expression
-    # | string_expression"""
+        | element"""
 
 
 def p_logical_expression(p):
-    """logical_expression : number comparison_operator number
-    | matrix EQUAL matrix
-    | matrix NOT_EQUAL matrix
-    | string comparison_operator string"""
+    """logical_expression : element comparison_operator element"""
 
 
 def p_comparison_operator(p):
@@ -86,70 +86,39 @@ def p_comparison_operator(p):
     | LARGER_OR_EQUAL"""
 
 
-def p_number(p):
-    """number : '-' number %prec UMINUS
-    | INT
-    | FLOAT
-    | ID
-    | arithmetic_expression """
-
-
 def p_arithmetic_expression(p):
-    """arithmetic_expression : number arithmetic_operator number"""
+    """arithmetic_expression : element arithmetic_operator element"""
 
 
 def p_arithmetic_operator(p):
-    """arithmetic_operator : '+'
+    """ arithmetic_operator : '+'
     | '-'
     | '*'
-    | '/'"""
-
-
-def p_matrix(p):
-    """matrix : - matrix %prec MUMINUS
-    | matrix TRANSPOSE %prec TRANS
-    | ID
-    | matrix_expression """
-    #| matrix_function
-    #| matrix_literal
-
-
-def p_matrix_expression(p):
-    """matrix_expression : matrix matrix_operator matrix"""
-
-
-def p_matrix_operator(p):
-    """matrix_operator : MTX_SUM
+    | '/'
+    | MTX_SUM
     | MTX_DIFFERENCE
     | MTX_PRODUCT
-    | MTX_QUOTIENT
-    | '+'
-    | '-'
-    | '*' """
+    | MTX_QUOTIENT """
 
 
-def p_string(p):
-    """string : STRING
-    | ID
-    | string_expression """
-
-
-def p_string_expression(p):
-    """string_expression : string '+' string"""
-
+# def p_matrix(p):
+#     """matrix :"""
+#     #| matrix_function
+#     #| matrix_literal
 
 def p_range(p):
-    """range : number ':' number"""
+    """range : element ':' element"""
 
 
 def p_assignment(p):
-    """assignment : ID '=' number
-    | ID '=' matrix
-    | ID '=' string"""
+    """assignment : ID '=' element"""
 
 
 def p_error(p):
-    print("syntax error")
+    if p:
+        print("Syntax error at line {0}: LexToken({1}, '{2}')".format(p.lineno, p.type, p.value))
+    else:
+        print("Unexpected end of input")
 
 
 parserA = yacc.yacc()
