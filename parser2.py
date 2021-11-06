@@ -145,8 +145,7 @@ def p_range(p):
 def p_assignment(p):
     """assignment : ID '=' number
     | ID '=' matrix
-    | ID '=' string
-    | ID '=' ID """
+    | ID '=' string"""
 
 
 def p_error(p):
