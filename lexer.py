@@ -16,10 +16,11 @@ reserved = {
 
 tokens = ("MTX_SUM", "MTX_DIFFERENCE", "MTX_PRODUCT", "MTX_QUOTIENT", "ADD", "SUBTRACT", "MULTIPLY", "DIVIDE",
           "SMALLER_OR_EQUAL", "LARGER_OR_EQUAL", "NOT_EQUAL", "EQUAL", "ID", "INT",
-          "FLOAT", "STRING") + tuple(reserved.values())
+          "FLOAT", "STRING","TRANSPOSE") + tuple(reserved.values())
 
-literals = ['+', '-', '*', '/', '(', ')', '[', ']', '{', '}', ',', ';', ':', '\'', '=', '<', '>']
+literals = ['+', '-', '*', '/', '(', ')', '[', ']', '{', '}', ',', ';', ':', '=', '<', '>']
 
+t_TRANSPOSE = r"'"
 t_MTX_SUM = r'\.\+'
 t_MTX_DIFFERENCE = r'\.\-'
 t_MTX_PRODUCT = r'\.\*'

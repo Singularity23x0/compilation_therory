@@ -1,5 +1,6 @@
+import parser2
 import sys
-from lexer import lexer
+from parser2 import *
 
 if __name__ == '__main__':
 
@@ -15,3 +16,5 @@ if __name__ == '__main__':
 
     for token in lexer:
         print("(%d): %s(%s)" % (token.lineno, token.type, token.value))
+
+    parser2.parserA.parse(text, lexer=lexer)
