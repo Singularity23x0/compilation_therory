@@ -59,17 +59,22 @@ def p_conditional(p):
 
 def p_expression(p):
     """expression : logical_expression
-    | assignment
-    | arithmetic_expression
-    | matrix_expression
-    | string_expression"""
+        | assignment
+        | number
+        | matrix
+        | string"""
+    # """expression : logical_expression
+    # | assignment
+    # | arithmetic_expression
+    # | matrix_expression
+    # | string_expression"""
 
 
 def p_logical_expression(p):
-    """logical_expression : arithmetic_expression comparison_operator arithmetic_expression
-    | matrix_expression EQUAL matrix_expression
-    | matrix_expression NOT_EQUAL matrix_expression
-    | string_expression comparison_operator string_expression"""
+    """logical_expression : number comparison_operator number
+    | matrix EQUAL matrix
+    | matrix NOT_EQUAL matrix
+    | string comparison_operator string"""
 
 
 def p_comparison_operator(p):
@@ -90,8 +95,7 @@ def p_number(p):
 
 
 def p_arithmetic_expression(p):
-    """arithmetic_expression : number
-    | number arithmetic_operator number"""
+    """arithmetic_expression : number arithmetic_operator number"""
 
 
 def p_arithmetic_operator(p):
@@ -109,9 +113,9 @@ def p_matrix(p):
     #| matrix_function
     #| matrix_literal
 
+
 def p_matrix_expression(p):
-    """matrix_expression : matrix
-    | matrix matrix_operator matrix"""
+    """matrix_expression : matrix matrix_operator matrix"""
 
 
 def p_matrix_operator(p):
@@ -131,8 +135,7 @@ def p_string(p):
 
 
 def p_string_expression(p):
-    """string_expression : string
-    | string '+' string"""
+    """string_expression : string '+' string"""
 
 
 def p_range(p):
