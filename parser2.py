@@ -2,14 +2,20 @@ import ply.yacc as yacc
 from lexer import *
 
 precedence = (
+    #('nonassoc', 'EQUAL','NOT_EQUAL','SMALLER_OR_EQUAL','LARGER_OR_EQUAL'),
+    #('nonassoc', '='),
+    #('nonassoc', 'ARITH_EXP'),
+    #('nonassoc', 'FLOAT'),
+    #('nonassoc', 'INT'),
+    #('nonassoc', 'STRING'),
     ('nonassoc', 'IFX'),
     ('nonassoc', 'ELSE'),
     ('left', '+', '-'),
     ('left', '*', '/'),
-    ('right', 'UMINUS'),
     ('left', 'MTX_SUM', 'MTX_DIFFERENCE'),
     ('left', 'MTX_PRODUCT', 'MTX_QUOTIENT'),
-    ('right', 'TRANS')
+    ('right', 'UMINUS'),
+    ('right', 'TRANSPOSE')
 )
 
 
@@ -32,7 +38,7 @@ def p_block(p):
 
 
 def p_for(p):
-    """for : FOR ID '=' range group"""
+    """for : FOR ID '=' range group """
 
 
 def p_while(p):
@@ -47,7 +53,7 @@ def p_if(p):
 def p_group(p):
     """group : conditional
     | line
-    | block"""
+    | block """
 
 
 def p_conditional(p):
@@ -63,7 +69,7 @@ def p_element(p):
     | INT
     | STRING
     | '-' element %prec UMINUS
-    | element TRANSPOSE %prec TRANS"""
+    | element TRANSPOSE """
     # TODO add defined matrix
 
 
