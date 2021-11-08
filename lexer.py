@@ -44,13 +44,13 @@ def t_STRING(t):
 
 
 def t_FLOAT(t):
-    r'-?(([1-9]\d*|0)\.\d*(E-?\d+)?|\.\d+(E-?\d+)?)'
+    r'([1-9]\d*|0)\.\d*(E-?\d+)?|\.\d+(E-?\d+)?'
     t.value = float(t.value)
     return t
 
 
 def t_INT(t):
-    r'-?([1-9]\d*|0)'
+    r'[1-9]\d*|0'
     t.value = int(t.value)
     return t
 
