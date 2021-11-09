@@ -41,6 +41,10 @@ def p_for(p):
     """for : FOR ID '=' range group """
 
 
+def p_range(p):
+    """range : value_element ':' value_element"""
+
+
 def p_while(p):
     """while : WHILE '(' logical_expression ')' group"""
 
@@ -62,38 +66,28 @@ def p_conditional(p):
     | for"""
 
 
-def p_element(p):
-    """element : ID
+def p_value_element(p):
+    """value_element : ID
     | arithmetic_expression
     | FLOAT
     | INT
     | STRING
-    | '-' element %prec UMINUS
-    | element TRANSPOSE """
-    # TODO add defined matrix
+    | '-' value_element %prec UMINUS
+    | value_element TRANSPOSE
+    | matrix_definition"""
 
 
-def p_expression(p):
-    """expression : logical_expression
-        | assignment
-        | element"""
+def p_matrix_definition(p):
+    """matrix_definition : '[' matrix_definition_inside ']'"""
 
 
-def p_logical_expression(p):
-    """logical_expression : element comparison_operator element"""
-
-
-def p_comparison_operator(p):
-    """comparison_operator : '<'
-    | '>'
-    | EQUAL
-    | NOT_EQUAL
-    | SMALLER_OR_EQUAL
-    | LARGER_OR_EQUAL"""
+def p_matrix_definition_inside(p):
+    """matrix_definition_inside : matrix_definition_inside matrix_definition_inside
+    | value_element ','"""
 
 
 def p_arithmetic_expression(p):
-    """arithmetic_expression : element arithmetic_operator element"""
+    """arithmetic_expression : value_element arithmetic_operator value_element"""
 
 
 def p_arithmetic_operator(p):
@@ -107,17 +101,27 @@ def p_arithmetic_operator(p):
     | MTX_QUOTIENT """
 
 
-# def p_matrix(p):
-#     """matrix :"""
-#     #| matrix_function
-#     #| matrix_literal
+def p_expression(p):
+    """expression : logical_expression
+        | assignment
+        | value_element"""
 
-def p_range(p):
-    """range : element ':' element"""
+
+def p_logical_expression(p):
+    """logical_expression : value_element comparison_operator value_element"""
+
+
+def p_comparison_operator(p):
+    """comparison_operator : '<'
+    | '>'
+    | EQUAL
+    | NOT_EQUAL
+    | SMALLER_OR_EQUAL
+    | LARGER_OR_EQUAL"""
 
 
 def p_assignment(p):
-    """assignment : ID '=' element"""
+    """assignment : ID '=' value_element"""
 
 
 def p_error(p):
