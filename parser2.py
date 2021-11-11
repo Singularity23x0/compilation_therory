@@ -133,8 +133,16 @@ def p_comparison_operator(p):
     | LARGER_OR_EQUAL"""
 
 
+def p_assignment_operator(p):
+    """assignment_operator : '='
+    | ADD
+    | SUBTRACT
+    | MULTIPLY
+    | DIVIDE """
+
+
 def p_assignment(p):
-    """assignment : ID '=' value_element"""
+    """assignment : ID assignment_operator value_element"""
 
 
 def p_error(p):
