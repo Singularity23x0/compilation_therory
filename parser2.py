@@ -19,8 +19,6 @@ precedence = (
     ('left', 'MTX_PRODUCT', 'MTX_QUOTIENT'),
     ('right', 'UMINUS'),
     ('left', 'TRANSPOSE'),
-    #('nonassoc', 'BLOCK'),
-
 )
 
 
@@ -78,21 +76,31 @@ def p_value_element(p):
     | INT
     | STRING
     | '-' value_element %prec UMINUS
-    | value_element TRANSPOSE"""
-    #| matrix_definition"""
+    | value_element TRANSPOSE
+    | matrix_definition"""
 
 
-# def p_matrix_definition(p):
-#     """matrix_definition : '[' matrix_definition_inside ']'"""
-#
-#
-# def p_matrix_definition_inside(p):
-#     """matrix_definition_inside : matrix_definition_inside matrix_definition_inside
-#     | value_element ','"""
+def p_matrix_definition(p):
+    """matrix_definition : '[' matrix_definition_inside ']' """
+
+
+def p_matrix_definition_inside(p):
+    """matrix_definition_inside : matrix_row ',' matrix_definition_inside
+    | matrix_row """
+
+
+def p_matrix_row(p):
+    """ matrix_row : '[' vector ']' """
+
+
+def p_vector(p):
+    """ vector : value_element ',' vector
+    | value_element"""
 
 
 def p_arithmetic_expression(p):
-    """arithmetic_expression : value_element arithmetic_operator value_element %prec ART"""
+    """arithmetic_expression : value_element arithmetic_operator value_element %prec ART
+    | '(' value_element ')' """
 
 
 def p_arithmetic_operator(p):
