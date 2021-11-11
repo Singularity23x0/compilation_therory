@@ -81,7 +81,8 @@ def p_value_element(p):
 
 
 def p_matrix_definition(p):
-    """matrix_definition : '[' matrix_definition_inside ']' """
+    """matrix_definition : '[' matrix_definition_inside ']'
+     | matrix_gen_func """
 
 
 def p_matrix_definition_inside(p):
@@ -96,6 +97,16 @@ def p_matrix_row(p):
 def p_vector(p):
     """ vector : value_element ',' vector
     | value_element"""
+
+
+def p_matrix_gen_func(p):
+    """ matrix_gen_func : func_name '(' value_element ')' """
+
+
+def p_func_name(p):
+    """ func_name : EYE
+    | ONES
+    | ZEROS """
 
 
 def p_arithmetic_expression(p):
@@ -117,7 +128,11 @@ def p_arithmetic_operator(p):
 def p_expression(p):
     """expression : logical_expression
     | assignment
-    | value_element"""
+    | value_element
+    | BREAK
+    | CONT
+    | RETURN
+    | print """
 
 
 def p_logical_expression(p):
@@ -143,6 +158,10 @@ def p_assignment_operator(p):
 
 def p_assignment(p):
     """assignment : ID assignment_operator value_element"""
+
+
+def p_print(p):
+    """ print : PRINT vector"""
 
 
 def p_error(p):
