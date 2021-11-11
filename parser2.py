@@ -3,19 +3,24 @@ from lexer import *
 
 precedence = (
     #('nonassoc', 'EQUAL','NOT_EQUAL','SMALLER_OR_EQUAL','LARGER_OR_EQUAL'),
-    #('nonassoc', '='),
     #('nonassoc', 'ARITH_EXP'),
     #('nonassoc', 'FLOAT'),
     #('nonassoc', 'INT'),
     #('nonassoc', 'STRING'),
+# ('nonassoc', 'LINE'),
+    ('nonassoc', 'RANGE'),  # check if should be here
+    ('nonassoc', 'IFN'),  # check if should be here
     ('nonassoc', 'IFX'),
-    ('nonassoc', 'ELSE'),
+    #('right', '='),
+    ('left', 'ART'),  # check if should be here
     ('left', '+', '-'),
     ('left', '*', '/'),
     ('left', 'MTX_SUM', 'MTX_DIFFERENCE'),
     ('left', 'MTX_PRODUCT', 'MTX_QUOTIENT'),
     ('right', 'UMINUS'),
-    ('right', 'TRANSPOSE')
+    ('left', 'TRANSPOSE'),
+    #('nonassoc', 'BLOCK'),
+
 )
 
 
@@ -25,12 +30,12 @@ def p_program(p):
 
 
 def p_segment(p):
-    """segment : segment segment
+    """segment : group segment
     | group"""
 
 
 def p_line(p):
-    """line : expression ';'"""
+    """line : expression ';' """
 
 
 def p_block(p):
@@ -42,7 +47,7 @@ def p_for(p):
 
 
 def p_range(p):
-    """range : value_element ':' value_element"""
+    """range : value_element ':' value_element %prec RANGE"""
 
 
 def p_while(p):
@@ -50,14 +55,14 @@ def p_while(p):
 
 
 def p_if(p):
-    """if : IF '(' logical_expression ')' group
+    """if : IF '(' logical_expression ')' group %prec IFN
     | IF '(' logical_expression ')' group ELSE group %prec IFX"""
 
 
 def p_group(p):
     """group : conditional
     | line
-    | block """
+    | block"""
 
 
 def p_conditional(p):
@@ -73,21 +78,21 @@ def p_value_element(p):
     | INT
     | STRING
     | '-' value_element %prec UMINUS
-    | value_element TRANSPOSE
-    | matrix_definition"""
+    | value_element TRANSPOSE"""
+    #| matrix_definition"""
 
 
-def p_matrix_definition(p):
-    """matrix_definition : '[' matrix_definition_inside ']'"""
-
-
-def p_matrix_definition_inside(p):
-    """matrix_definition_inside : matrix_definition_inside matrix_definition_inside
-    | value_element ','"""
+# def p_matrix_definition(p):
+#     """matrix_definition : '[' matrix_definition_inside ']'"""
+#
+#
+# def p_matrix_definition_inside(p):
+#     """matrix_definition_inside : matrix_definition_inside matrix_definition_inside
+#     | value_element ','"""
 
 
 def p_arithmetic_expression(p):
-    """arithmetic_expression : value_element arithmetic_operator value_element"""
+    """arithmetic_expression : value_element arithmetic_operator value_element %prec ART"""
 
 
 def p_arithmetic_operator(p):
@@ -103,8 +108,8 @@ def p_arithmetic_operator(p):
 
 def p_expression(p):
     """expression : logical_expression
-        | assignment
-        | value_element"""
+    | assignment
+    | value_element"""
 
 
 def p_logical_expression(p):
