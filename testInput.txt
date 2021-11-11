@@ -20,6 +20,7 @@ if (m==n) {
     if (m >= n)
         print res;
         x*12;
+        break;
 }
 
 x1 = .2;
