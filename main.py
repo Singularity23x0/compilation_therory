@@ -1,11 +1,11 @@
-import parserTree
+from parsersing import parserA
 import sys
-from parserTree import *
+from parsersing import *
 
 if __name__ == '__main__':
 
     try:
-        filename = sys.argv[1] if len(sys.argv) > 1 else "testInput2.txt"
+        filename = sys.argv[1] if len(sys.argv) > 1 else "testInput.txt"
         file = open(filename, "r")
     except IOError:
         print("Cannot open {0} file".format(filename))
@@ -17,4 +17,4 @@ if __name__ == '__main__':
     for token in lexer:
         print("(%d): %s(%s)" % (token.lineno, token.type, token.value))
 
-    parserTree.parserA.parse(text, lexer=lexer)
+    parserA.parse(text, lexer=lexer)
