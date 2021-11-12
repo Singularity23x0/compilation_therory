@@ -2,21 +2,12 @@ import ply.yacc as yacc
 from lexer import *
 
 precedence = (
-    #('nonassoc', 'EQUAL','NOT_EQUAL','SMALLER_OR_EQUAL','LARGER_OR_EQUAL'),
-    #('nonassoc', 'ARITH_EXP'),
-    #('nonassoc', 'FLOAT'),
-    #('nonassoc', 'INT'),
-    #('nonassoc', 'STRING'),
-# ('nonassoc', 'LINE'),
-    ('nonassoc', 'RANGE'),  # check if should be here
-    ('nonassoc', 'IFN'),  # check if should be here
+    ('nonassoc', 'RANGE'),
+    ('nonassoc', 'IFN'),
     ('nonassoc', 'IFX'),
-    #('right', '='),
-    ('left', 'ART'),  # check if should be here
-    ('left', '+', '-'),
-    ('left', '*', '/'),
-    ('left', 'MTX_SUM', 'MTX_DIFFERENCE'),
-    ('left', 'MTX_PRODUCT', 'MTX_QUOTIENT'),
+    ('nonassoc', 'ELSE'),
+    ('left', '+', '-', 'MTX_SUM', 'MTX_DIFFERENCE','ART'),
+    ('left', '*', '/', 'MTX_PRODUCT', 'MTX_QUOTIENT'),
     ('right', 'UMINUS'),
     ('left', 'TRANSPOSE'),
 )
@@ -33,7 +24,8 @@ def p_segment(p):
 
 
 def p_line(p):
-    """line : expression ';' """
+    """line : expression ';'
+    | ';' """
 
 
 def p_block(p):
@@ -77,7 +69,12 @@ def p_value_element(p):
     | STRING
     | '-' value_element %prec UMINUS
     | value_element TRANSPOSE
-    | matrix_definition"""
+    | matrix_definition
+    | select_element"""
+
+
+def p_select_element(p):
+    """ select_element : value_element matrix_row"""
 
 
 def p_matrix_definition(p):
@@ -131,7 +128,7 @@ def p_expression(p):
     | value_element
     | BREAK
     | CONT
-    | RETURN
+    | return
     | print """
 
 
@@ -157,11 +154,18 @@ def p_assignment_operator(p):
 
 
 def p_assignment(p):
-    """assignment : ID assignment_operator value_element"""
+    """assignment : ID assignment_operator value_element
+    | select_element assignment_operator value_element
+    | select_element assignment_operator matrix_row"""
 
 
 def p_print(p):
     """ print : PRINT vector"""
+
+
+def p_return(p):
+    """ return : RETURN value_element
+    | RETURN """
 
 
 def p_error(p):

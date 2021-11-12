@@ -3,21 +3,12 @@ import tree_draw as tree
 from lexer import *
 
 precedence = (
-    #('nonassoc', 'EQUAL','NOT_EQUAL','SMALLER_OR_EQUAL','LARGER_OR_EQUAL'),
-    #('nonassoc', 'ARITH_EXP'),
-    #('nonassoc', 'FLOAT'),
-    #('nonassoc', 'INT'),
-    #('nonassoc', 'STRING'),
-# ('nonassoc', 'LINE'),
-    ('nonassoc', 'RANGE'),  # check if should be here
-    ('nonassoc', 'IFN'),  # check if should be here
+    ('nonassoc', 'RANGE'),
+    ('nonassoc', 'IFN'),
     ('nonassoc', 'IFX'),
-    #('right', '='),
-    ('left', 'ART'),  # check if should be here
-    ('left', '+', '-'),
-    ('left', '*', '/'),
-    ('left', 'MTX_SUM', 'MTX_DIFFERENCE'),
-    ('left', 'MTX_PRODUCT', 'MTX_QUOTIENT'),
+    ('nonassoc', 'ELSE'),
+    ('left', '+', '-', 'MTX_SUM', 'MTX_DIFFERENCE','ART'),
+    ('left', '*', '/', 'MTX_PRODUCT', 'MTX_QUOTIENT'),
     ('right', 'UMINUS'),
     ('left', 'TRANSPOSE'),
 )
@@ -43,9 +34,14 @@ def p_segment2(p):
     p[0]=tree.Node("segment",[p[1]])
 
 
-def p_line(p):
+def p_line1(p):
     """line : expression ';' """
     p[0]=tree.Node("line",[p[1],tree.Node(';',None)])
+
+
+def p_line2(p):
+    """line : ';' """
+    p[0]=tree.Node("line",[tree.Node(';',None)])
 
 
 def p_block(p):
@@ -55,7 +51,7 @@ def p_block(p):
 
 def p_for(p):
     """for : FOR ID '=' range group """
-    p[0] = tree.Node("for", [tree.Node('for', None), tree.Node("ID",[tree.Node(p[2],None)]), tree.Node('=', None),p[4],p[5]])
+    p[0] = tree.Node("FOR", [tree.Node('for', None), tree.Node("ID",[tree.Node(p[2],None)]), tree.Node('=', None),p[4],p[5]])
 
 
 def p_range(p):
@@ -70,12 +66,12 @@ def p_while(p):
 
 def p_if1(p):
     """if : IF '(' logical_expression ')' group %prec IFN"""
-    p[0] = tree.Node("if", [tree.Node('if', None),tree.Node('(', None),p[3],tree.Node(')', None),p[5]])
+    p[0] = tree.Node("IF", [tree.Node('if', None),tree.Node('(', None),p[3],tree.Node(')', None),p[5]])
 
 
 def p_if2(p):
     """if : IF '(' logical_expression ')' group ELSE group %prec IFX"""
-    p[0] = tree.Node("if", [tree.Node('if', None),tree.Node('(', None),p[3],tree.Node(')', None),p[5],tree.Node('else', None),p[7]])
+    p[0] = tree.Node("IF", [tree.Node('if', None),tree.Node('(', None),p[3],tree.Node(')', None),p[5],tree.Node('else', None),p[7]])
 
 
 def p_group(p):
@@ -126,6 +122,16 @@ def p_value_element3(p):
 def p_value_element4(p):
     """value_element : value_element TRANSPOSE"""
     p[0] = tree.Node("value_element", [p[1],tree.Node("'",None)])
+
+
+def p_value_element5(p):
+    """ value_element : select_element """
+    p[0] = tree.Node("value_element", p[1])
+
+
+def p_select_element(p):
+    """ select_element : value_element matrix_row"""
+    p[0] = tree.Node("select_element", [p[1], p[2]])
 
 
 def p_matrix_definition1(p):
@@ -201,14 +207,14 @@ def p_expression1(p):
     """expression : logical_expression
     | assignment
     | value_element
-    | print """
+    | print
+    | return """
     p[0] = tree.Node("expression", [p[1]])
 
 
 def p_expression2(p):
     """expression : BREAK
-    | CONT
-    | RETURN"""
+    | CONT """
     p[0] = tree.Node("expression", [tree.Node(p[1],None)])
 
 
@@ -236,14 +242,34 @@ def p_assignment_operator(p):
     p[0]=tree.Node("assignment_operator",[tree.Node(p[1],None)])
 
 
-def p_assignment(p):
+def p_assignment1(p):
     """assignment : ID assignment_operator value_element"""
     p[0] = tree.Node("assignment", [tree.Node("ID",[tree.Node(p[1],None)]),p[2],p[3]])
+
+
+def p_assignment2(p):
+    """assignment : select_element assignment_operator value_element"""
+    p[0] = tree.Node("assignment", [p[1],p[2],p[3]])
+
+
+def p_assignment3(p):
+    """assignment : select_element assignment_operator matrix_row"""
+    p[0] = tree.Node("assignment", [p[1], p[2], p[3]])
 
 
 def p_print(p):
     """ print : PRINT vector"""
     p[0] = tree.Node("print", [tree.Node("PRINT",None),p[2]])
+
+
+def p_return1(p):
+    """ return : RETURN value_element """
+    p[0] = tree.Node("return", [tree.Node("RETURN", None), p[2]])
+
+
+def p_return2(p):
+    """ return : RETURN """
+    p[0] = tree.Node("return", [tree.Node("RETURN", None)])
 
 
 def p_error(p):
