@@ -72,7 +72,8 @@ def p_single_value(p):
 
 def p_select_element(p):
     """ select_element : matrix_definition matrix_row
-    | ID matrix_row"""
+    | ID matrix_row
+    | '(' arithmetic_expression ')' matrix_row"""
 
 
 def p_matrix_definition(p):
