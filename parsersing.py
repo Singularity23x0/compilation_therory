@@ -35,7 +35,7 @@ def p_for(p):
 
 
 def p_range(p):
-    """range : val ':' val """
+    """range : arithmetic_expression ':' arithmetic_expression """
 
 
 def p_while(p):
@@ -53,13 +53,6 @@ def p_group(p):
     | for
     | line
     | block"""
-
-
-def p_val(p):
-    """ val : single_value
-    | '-' val %prec UMINUS
-    | '(' val ')'
-    | val TRANSPOSE"""
 
 
 def p_single_value(p):
@@ -139,9 +132,7 @@ def p_arithmetic_expression(p):
 
 
 def p_expression(p):
-    """expression : logical_expression
-    | assignment
-    | arithmetic_expression
+    """expression : assignment
     | BREAK
     | CONT
     | return
