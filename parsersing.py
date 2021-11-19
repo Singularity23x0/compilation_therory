@@ -2,14 +2,12 @@ import ply.yacc as yacc
 from lexer import *
 
 precedence = (
-    ('nonassoc', 'RANGE'),
-    ('nonassoc', 'IFN'),
     ('nonassoc', 'IFX'),
     ('nonassoc', 'ELSE'),
-    ('left', '+', '-', 'MTX_SUM', 'MTX_DIFFERENCE','ART'),
+    ('left', '+', '-', 'MTX_SUM', 'MTX_DIFFERENCE'),
     ('left', '*', '/', 'MTX_PRODUCT', 'MTX_QUOTIENT'),
     ('right', 'UMINUS'),
-    ('left', 'TRANSPOSE'),
+    ('left', 'TRANSPOSE')
 )
 
 
@@ -37,7 +35,7 @@ def p_for(p):
 
 
 def p_range(p):
-    """range : value_element ':' value_element %prec RANGE"""
+    """range : val ':' val """
 
 
 def p_while(p):
@@ -45,36 +43,36 @@ def p_while(p):
 
 
 def p_if(p):
-    """if : IF '(' logical_expression ')' group %prec IFN
-    | IF '(' logical_expression ')' group ELSE group %prec IFX"""
+    """if : IF '(' logical_expression ')' group %prec IFX
+    | IF '(' logical_expression ')' group ELSE group"""
 
 
 def p_group(p):
-    """group : conditional
+    """group : if
+    | while
+    | for
     | line
     | block"""
 
 
-def p_conditional(p):
-    """conditional : if
-    | while
-    | for"""
+def p_val(p):
+    """ val : single_value
+    | '-' val %prec UMINUS
+    | '(' val ')'
+    | val TRANSPOSE"""
 
 
-def p_value_element(p):
-    """value_element : ID
-    | arithmetic_expression
+def p_single_value(p):
+    """single_value : ID
     | FLOAT
     | INT
     | STRING
-    | '-' value_element %prec UMINUS
-    | value_element TRANSPOSE
-    | matrix_definition
-    | select_element"""
+    | matrix_definition"""
 
 
 def p_select_element(p):
-    """ select_element : value_element matrix_row"""
+    """ select_element : matrix_definition matrix_row
+    | ID matrix_row"""
 
 
 def p_matrix_definition(p):
@@ -92,12 +90,12 @@ def p_matrix_row(p):
 
 
 def p_vector(p):
-    """ vector : value_element ',' vector
-    | value_element"""
+    """ vector : arithmetic_expression ',' vector
+    | arithmetic_expression"""
 
 
 def p_matrix_gen_func(p):
-    """ matrix_gen_func : func_name '(' value_element ')' """
+    """ matrix_gen_func : func_name '(' arithmetic_expression ')' """
 
 
 def p_func_name(p):
@@ -107,25 +105,42 @@ def p_func_name(p):
 
 
 def p_arithmetic_expression(p):
-    """arithmetic_expression : value_element arithmetic_operator value_element %prec ART
-    | '(' value_element ')' """
+    """arithmetic_expression : arithmetic_expression '+' arithmetic_expression
+    | arithmetic_expression '-' arithmetic_expression
+    | arithmetic_expression '*' arithmetic_expression
+    | arithmetic_expression '/' arithmetic_expression
+    | arithmetic_expression MTX_SUM arithmetic_expression
+    | arithmetic_expression MTX_DIFFERENCE arithmetic_expression
+    | arithmetic_expression MTX_PRODUCT  arithmetic_expression
+    | arithmetic_expression MTX_QUOTIENT  arithmetic_expression
+    | single_value
+    | '(' arithmetic_expression ')'
+    | '-' arithmetic_expression %prec UMINUS
+    | arithmetic_expression TRANSPOSE"""
+
+# def p_arithmetic_expression(p):
+#     """arithmetic_expression : arithmetic_expression arithmetic_operator arithmetic_expression
+#     | single_value
+#     | '(' arithmetic_expression ')'
+#     | '-' arithmetic_expression %prec UMINUS
+#     | arithmetic_expression TRANSPOSE"""
 
 
-def p_arithmetic_operator(p):
-    """ arithmetic_operator : '+'
-    | '-'
-    | '*'
-    | '/'
-    | MTX_SUM
-    | MTX_DIFFERENCE
-    | MTX_PRODUCT
-    | MTX_QUOTIENT """
+# def p_arithmetic_operator(p):
+#     """ arithmetic_operator : '+'
+#     | '-'
+#     | '*'
+#     | '/'
+#     | MTX_SUM
+#     | MTX_DIFFERENCE
+#     | MTX_PRODUCT
+#     | MTX_QUOTIENT """
 
 
 def p_expression(p):
     """expression : logical_expression
     | assignment
-    | value_element
+    | arithmetic_expression
     | BREAK
     | CONT
     | return
@@ -133,7 +148,7 @@ def p_expression(p):
 
 
 def p_logical_expression(p):
-    """logical_expression : value_element comparison_operator value_element"""
+    """logical_expression : arithmetic_expression comparison_operator arithmetic_expression"""
 
 
 def p_comparison_operator(p):
@@ -154,8 +169,8 @@ def p_assignment_operator(p):
 
 
 def p_assignment(p):
-    """assignment : ID assignment_operator value_element
-    | select_element assignment_operator value_element
+    """assignment : ID assignment_operator arithmetic_expression
+    | select_element assignment_operator arithmetic_expression
     | select_element assignment_operator matrix_row"""
 
 
@@ -164,7 +179,7 @@ def p_print(p):
 
 
 def p_return(p):
-    """ return : RETURN value_element
+    """ return : RETURN arithmetic_expression
     | RETURN """
 
 
