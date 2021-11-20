@@ -1,6 +1,6 @@
-from parsserTree2 import parserA
+from parserTreeART import parserA
 import sys
-from parsserTree2 import *
+from parserTreeART import *
 
 if __name__ == '__main__':
 
