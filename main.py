@@ -1,5 +1,6 @@
 import sys
-from abstract_parser_tree import *
+from lexer import lexer
+from abstract_parser_tree import PARSER
 
 if __name__ == '__main__':
 
