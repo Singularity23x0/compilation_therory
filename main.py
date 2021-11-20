@@ -1,6 +1,6 @@
-from parsersing import parserA
+from parsserTree2 import parserA
 import sys
-from parsersing import *
+from parsserTree2 import *
 
 if __name__ == '__main__':
 
