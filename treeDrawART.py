@@ -103,7 +103,8 @@ class TreePrinter:
 
     @addToClass(Function)
     def write(self, f, shift, last):
-        TreePrinter.addHead(f, shift, last, "FUNCTION name: " + self.name + " to finish")
+        TreePrinter.addHead(f, shift, last, "FUNCTION name: " + self.name)
+        self.arguments.write(f,shift+[last],True)
 
     @addToClass(ArithmeticExpressionBinary)
     def write(self, f, shift, last):
