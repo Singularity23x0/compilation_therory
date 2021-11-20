@@ -150,8 +150,8 @@ class TreePrinter:
     @addToClass(Range)
     def write(self, f, shift, last):
         TreePrinter.addHead(f, shift, last, "RANGE")
-        self.fro.write(f,shift+[last],last)
-        self.to.write(f, shift + [last], last)
+        self.fro.write(f,shift+[last],False)
+        self.to.write(f, shift + [last], True)
 
     @addToClass(Empty)
     def write(self, f, shift, last):
