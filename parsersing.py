@@ -182,7 +182,7 @@ def p_error(p):
         print("Unexpected end of input")
 
 
-parserA = yacc.yacc()
+PARSER = yacc.yacc()
 
 
 
