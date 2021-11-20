@@ -61,11 +61,28 @@ class TreePrinter:
 
     @addToClass(If)
     def write(self, f, shift, last):
-        TreePrinter.addHead(f, shift, last, "IF" + " to finish")
+        TreePrinter.addHead(f, shift, last, "IF")
+        self.condition.write(f,shift+[last],False)
+        self.inside.write(f, shift + [last], True)
+
+    @addToClass(IfElse)
+    def write(self, f, shift, last):
+        TreePrinter.addHead(f, shift, last, "IFELSE")
+        self.condition.write(f, shift + [last], False)
+        self.inside.write(f, shift + [last], False)
+        self.insideElse.write(f, shift + [last], True)
+
+    @addToClass(While)
+    def write(self, f, shift, last):
+        TreePrinter.addHead(f, shift, last, "WHILE")
+        self.condition.write(f, shift + [last], False)
+        self.inside.write(f, shift + [last], True)
 
     @addToClass(For)
     def write(self, f, shift, last):
-        TreePrinter.addHead(f, shift, last, "For" + " to finish")
+        TreePrinter.addHead(f, shift, last, "For variable: "+self.idv.name)
+        self.rangeS.write(f,shift+[last],False)
+        self.inside.write(f, shift + [last], True)
 
     @addToClass(Variable)
     def write(self, f, shift, last):
@@ -94,6 +111,12 @@ class TreePrinter:
         self.left.write(f, shift + [last], False)
         self.right.write(f, shift + [last], True)
 
+    @addToClass(LogicalExpression)
+    def write(self, f, shift, last):
+        TreePrinter.addHead(f, shift, last, self.operator)
+        self.left.write(f, shift + [last], False)
+        self.right.write(f, shift + [last], True)
+
     @addToClass(ArithmeticExpressionUnary)
     def write(self, f, shift, last):
         TreePrinter.addHead(f, shift, last, Operator.operatorName(self.operator))
@@ -110,10 +133,52 @@ class TreePrinter:
     @addToClass(Row)
     def write(self, f, shift, last):
         TreePrinter.addHead(f, shift, last,"ROW")
+        self.valueList.write(f,shift+[last],True)
+
+    @addToClass(Vector)
+    def write(self, f, shift, last):
         i = 0
-        for instruction in self.valueList:
+        for instruction in self.value:
             i += 1
-            instruction.write(f, shift + [last], i == len(self.valueList))
+            instruction.write(f, shift, i == len(self.value))
+
+    @addToClass(Print)
+    def write(self, f, shift, last):
+        TreePrinter.addHead(f, shift, last, "PRINT")
+        self.vector.write(f,shift+[last],True)
+
+    @addToClass(Range)
+    def write(self, f, shift, last):
+        TreePrinter.addHead(f, shift, last, "RANGE")
+        self.fro.write(f,shift+[last],last)
+        self.to.write(f, shift + [last], last)
+
+    @addToClass(Empty)
+    def write(self, f, shift, last):
+        TreePrinter.addHead(f, shift, last, "EMPTY")
+
+    @addToClass(Break)
+    def write(self, f, shift, last):
+        TreePrinter.addHead(f, shift, last, "BREAK")
+
+    @addToClass(Cont)
+    def write(self, f, shift, last):
+        TreePrinter.addHead(f, shift, last, "CONT")
+
+    @addToClass(SelectionSingle)
+    def write(self, f, shift, last):
+        TreePrinter.addHead(f, shift, last, "SINGLE_FROM_MATRIX")
+        self.matrix.write(f,shift+[last],False)
+        self.pos1.write(f,shift+[last],False)
+        self.pos2.write(f,shift+[last],True)
+
+    @addToClass(SelectColumn)
+    def write(self, f, shift, last):
+        TreePrinter.addHead(f, shift, last, "ROW_FROM_MATRIX")
+        self.matrix.write(f, shift + [last], False)
+        self.pos.write(f, shift + [last], True)
+
+
 
 
 

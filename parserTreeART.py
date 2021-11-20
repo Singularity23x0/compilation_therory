@@ -42,7 +42,7 @@ def p_line1(p):
 
 def p_line2(p):
     """line : ';' """
-    p[0] = None
+    p[0] = Empty()
 
 
 def p_block(p):
@@ -122,7 +122,7 @@ def p_select_elementMD(p):
 def p_select_elementID(p):
     """ select_element : ID matrix_row"""
     if p[2].getSize() == 2:
-        p[0] = SelectionSingle(Variable(p[1], Types.MATRIX), p[2].getFirst(), p[2].getSecont())
+        p[0] = SelectionSingle(Variable(p[1], Types.MATRIX), p[2].getFirst(), p[2].getSecond())
     elif p[2].getSize() == 1:
         p[0] = SelectColumn(Variable(p[1], Types.MATRIX), p[2].getFirst())
     else:
@@ -314,7 +314,7 @@ def p_return1(p):
 
 def p_return2(p):
     """ return : RETURN """
-    p[0] = Return(None)
+    p[0] = Return(Empty())
 
 
 def p_error(p):

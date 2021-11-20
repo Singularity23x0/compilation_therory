@@ -206,3 +206,7 @@ class Break:
 
 class Cont:
     pass
+
+
+class Empty:
+    pass
