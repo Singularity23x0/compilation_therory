@@ -115,7 +115,7 @@ def p_select_elementMD(p):
     elif p[2].getSize() == 1:
         p[0] = SelectColumn(p[1], p[2].getFirst())
     else:
-        raise ValueError("error wrong index list size in {0}".format(p.lineno))
+        raise ValueError("error wrong index list size in {0}".format(p.lineno(1)))
 
 
 def p_select_elementID(p):
@@ -125,7 +125,7 @@ def p_select_elementID(p):
     elif p[2].getSize() == 1:
         p[0] = SelectColumn(Variable(p[1], Types.MATRIX), p[2].getFirst())
     else:
-        raise ValueError("error wrong index list size in {0}".format(p.lineno))
+        raise ValueError("error wrong index list size in {0}".format(p.lineno(1)))
 
 
 def p_select_elementBAB(p):
@@ -135,7 +135,7 @@ def p_select_elementBAB(p):
     elif p[2].getSize() == 1:
         p[0] = SelectColumn(Value(p[2], Types.MATRIX), p[2].getFirst())
     else:
-        raise ValueError("error wrong index list size in {0}".format(p.lineno))
+        raise ValueError("error wrong index list size in {0}".format(p.lineno(1)))
 
 
 def p_matrix_definition1(p):

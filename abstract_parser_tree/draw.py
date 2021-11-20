@@ -104,7 +104,8 @@ class TreePrinter:
 
     @add_to_class(Function)
     def write(self, f, shift, last):
-        TreePrinter.add_head(f, shift, last, "FUNCTION name: " + self.name + " to finish")
+        TreePrinter.add_head(f, shift, last, "FUNCTION name: " + self.name)
+        self.arguments.write(f,shift+[last],True)
 
     @add_to_class(ArithmeticExpressionBinary)
     def write(self, f, shift, last):
@@ -149,6 +150,12 @@ class TreePrinter:
     def write(self, f, shift, last):
         TreePrinter.add_head(f, shift, last, "PRINT")
         self.vector.write(f, shift + [last], True)
+
+    @add_to_class(Return)
+    def write(self, f, shift, last):
+        TreePrinter.add_head(f, shift, last, "Return")
+        if self.value:
+            self.value.write(f, shift + [last], True)
 
     @add_to_class(Range)
     def write(self, f, shift, last):

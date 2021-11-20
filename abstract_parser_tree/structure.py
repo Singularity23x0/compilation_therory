@@ -23,7 +23,7 @@ class For:
 
 
 class Range:
-    def __init__(self, fro, to):
+    def __init__(self, fro, to):  # TODO both int (undefined) check
         self.fro = fro
         self.to = to
 
@@ -61,8 +61,8 @@ class Types:  # enum for types
 
 
 class Value:
-    def __init__(self, value, typeV,const=False):
-        self.const=const
+    def __init__(self, value, typeV,const=False):  # TODO auto const
+        self.const = const
         self.value = value
         self.typeV = typeV
 
@@ -73,15 +73,15 @@ class Variable:
         self.typeV = typeV
 
 
-class SelectionSingle:
-    def __init__(self, matrix, pos1, pos2):
+class SelectionSingle:  # TODO change name
+    def __init__(self, matrix, pos1, pos2):  # TODO pos int
         self.matrix = matrix
         self.pos1 = pos1
         self.pos2 = pos2
 
 
 class SelectColumn:
-    def __init__(self, matrix, pos):
+    def __init__(self, matrix, pos):  # TODO pos int
         self.matrix = matrix
         self.pos = pos
 
@@ -91,7 +91,7 @@ class Matrix:
         self.rowList = rowList
         self.type = Types.UNDEFINED  # TODO findIt
         self.rowSize = 0  # TODO calculate it
-        self.columnNum = len(rowList)
+        self.columnNum = len(rowList)  # TODO change name
 
 
 class Row:
@@ -132,7 +132,7 @@ class Vector:
 class Function:
     def __init__(self, name, argument):  # returnType):
         self.name = name
-        self.arguments = argument
+        self.arguments = argument  # TODO int
         # self.returnType=returnType #no needed always matrix
 
 
@@ -163,13 +163,13 @@ class Operator:
 
 
 class ArithmeticExpressionUnary:
-    def __init__(self, element, operator):
+    def __init__(self, element, operator):  # TODO Transpose matrix only
         self.element = element
         self.operator = operator
 
 
 class ArithmeticExpressionBinary:
-    def __init__(self, left, right, operator):
+    def __init__(self, left, right, operator):  # TODO matching types and operators
         self.left = left
         self.right = right
         self.operator = operator
@@ -177,14 +177,14 @@ class ArithmeticExpressionBinary:
 
 
 class LogicalExpression:
-    def __init__(self, left, right, operator):
+    def __init__(self, left, right, operator):  # TODO matching types
         self.left = left
         self.right = right
         self.operator = operator
 
 
 class Assignment:
-    def __init__(self, left, right, operator):
+    def __init__(self, left, right, operator):   # TODO matching types and operators
         self.left = left
         self.right = right
         self.operator = operator

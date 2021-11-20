@@ -14,7 +14,7 @@ if __name__ == '__main__':
     text = file.read()
     lexer.input(text)
 
-    for token in lexer:
-        print("(%d): %s(%s)" % (token.lineno, token.type, token.value))
+    # for token in lexer:
+    #     print("(%d): %s(%s)" % (token.lineno, token.type, token.value))
 
     PARSER.parse(text, lexer=lexer)
