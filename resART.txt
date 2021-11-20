@@ -1,0 +1,240 @@
+BLOCK
+  ╠>BLOCK
+  ║ ╚>BLOCK
+  ║   ╚>BLOCK
+  ║     ╠>BLOCK
+  ║     ║ ╠>=
+  ║     ║ ║ ╠>Variable
+  ║     ║ ║ ║ ╠>Name: A
+  ║     ║ ║ ║ ╚>type: UNDEFINED
+  ║     ║ ║ ╚>SINGLE_VALUE: CONST type: INT value: 2
+  ║     ║ ╚>=
+  ║     ║   ╠>Variable
+  ║     ║   ║ ╠>Name: A
+  ║     ║   ║ ╚>type: UNDEFINED
+  ║     ║   ╚>SINGLE_VALUE: CONST type: INT value: 3
+  ║     ╠>BLOCK
+  ║     ║ ╚>=
+  ║     ║   ╠>Variable
+  ║     ║   ║ ╠>Name: C
+  ║     ║   ║ ╚>type: UNDEFINED
+  ║     ║   ╚>SINGLE_VALUE: CONST type: INT value: 5
+  ║     ╚>BLOCK
+  ║       ╚>=
+  ║         ╠>Variable
+  ║         ║ ╠>Name: D
+  ║         ║ ╚>type: UNDEFINED
+  ║         ╚>SINGLE_VALUE: CONST type: INT value: 2
+  ╠>=
+  ║ ╠>Variable
+  ║ ║ ╠>Name: A
+  ║ ║ ╚>type: UNDEFINED
+  ║ ╚>SINGLE_VALUE: CONST type: MATRIX 
+  ║   ╚>SINGLE_VALUE: type: MATRIX 
+  ║     ╚>FUNCTION name: zeros to finish
+  ╠>=
+  ║ ╠>Variable
+  ║ ║ ╠>Name: B
+  ║ ║ ╚>type: UNDEFINED
+  ║ ╚>SINGLE_VALUE: CONST type: MATRIX 
+  ║   ╚>SINGLE_VALUE: type: MATRIX 
+  ║     ╚>FUNCTION name: ones to finish
+  ╠>=
+  ║ ╠>Variable
+  ║ ║ ╠>Name: I
+  ║ ║ ╚>type: UNDEFINED
+  ║ ╚>SINGLE_VALUE: CONST type: MATRIX 
+  ║   ╚>SINGLE_VALUE: type: MATRIX 
+  ║     ╚>FUNCTION name: eye to finish
+  ╠>=
+  ║ ╠>Variable
+  ║ ║ ╠>Name: D1
+  ║ ║ ╚>type: UNDEFINED
+  ║ ╚>MPLUS
+  ║   ╠>Variable
+  ║   ║ ╠>Name: A
+  ║   ║ ╚>type: UNDEFINED
+  ║   ╚>TRANSPOSE
+  ║     ╚>Variable
+  ║       ╠>Name: B
+  ║       ╚>type: UNDEFINED
+  ╠>-=
+  ║ ╠>Variable
+  ║ ║ ╠>Name: D2
+  ║ ║ ╚>type: UNDEFINED
+  ║ ╚>PLUS
+  ║   ╠>Variable
+  ║   ║ ╠>Name: A
+  ║   ║ ╚>type: UNDEFINED
+  ║   ╚>TRANSPOSE
+  ║     ╚>Variable
+  ║       ╠>Name: B
+  ║       ╚>type: UNDEFINED
+  ╠>*=
+  ║ ╠>Variable
+  ║ ║ ╠>Name: D3
+  ║ ║ ╚>type: UNDEFINED
+  ║ ╚>MSTAR
+  ║   ╠>Variable
+  ║   ║ ╠>Name: A
+  ║   ║ ╚>type: UNDEFINED
+  ║   ╚>TRANSPOSE
+  ║     ╚>Variable
+  ║       ╠>Name: B
+  ║       ╚>type: UNDEFINED
+  ╠>/=
+  ║ ╠>Variable
+  ║ ║ ╠>Name: D4
+  ║ ║ ╚>type: UNDEFINED
+  ║ ╚>MSLASH
+  ║   ╠>Variable
+  ║   ║ ╠>Name: A
+  ║   ║ ╚>type: UNDEFINED
+  ║   ╚>TRANSPOSE
+  ║     ╚>Variable
+  ║       ╠>Name: B
+  ║       ╚>type: UNDEFINED
+  ╠>=
+  ║ ╠>Variable
+  ║ ║ ╠>Name: E1
+  ║ ║ ╚>type: UNDEFINED
+  ║ ╚>SINGLE_VALUE: CONST type: MATRIX 
+  ║   ╚>SINGLE_VALUE: type: MATRIX 
+  ║     ╚>MATRIX type: UNDEFINED size:0x3
+  ║       ╠>ROW
+  ║       ║ ╠>SINGLE_VALUE: CONST type: INT value: 1
+  ║       ║ ╠>SINGLE_VALUE: CONST type: INT value: 2
+  ║       ║ ╚>SINGLE_VALUE: CONST type: INT value: 3
+  ║       ╠>ROW
+  ║       ║ ╠>SINGLE_VALUE: CONST type: INT value: 4
+  ║       ║ ╠>SINGLE_VALUE: CONST type: INT value: 5
+  ║       ║ ╚>SINGLE_VALUE: CONST type: INT value: 6
+  ║       ╚>ROW
+  ║         ╠>SINGLE_VALUE: CONST type: INT value: 7
+  ║         ╠>SINGLE_VALUE: CONST type: INT value: 8
+  ║         ╚>SINGLE_VALUE: CONST type: FLOAT value: 0.0
+  ╠>=
+  ║ ╠>Variable
+  ║ ║ ╠>Name: res1
+  ║ ║ ╚>type: UNDEFINED
+  ║ ╚>SINGLE_VALUE: CONST type: FLOAT value: 60.5
+  ╠>=
+  ║ ╠>Variable
+  ║ ║ ╠>Name: res2
+  ║ ║ ╚>type: UNDEFINED
+  ║ ╚>SINGLE_VALUE: CONST type: FLOAT value: 60.0
+  ╠>=
+  ║ ╠>Variable
+  ║ ║ ╠>Name: res3
+  ║ ║ ╚>type: UNDEFINED
+  ║ ╚>SINGLE_VALUE: CONST type: FLOAT value: 0.5
+  ╠>=
+  ║ ╠>Variable
+  ║ ║ ╠>Name: res4
+  ║ ║ ╚>type: UNDEFINED
+  ║ ╚>SINGLE_VALUE: CONST type: FLOAT value: 6052.0
+  ╠>=
+  ║ ╠>Variable
+  ║ ║ ╠>Name: str
+  ║ ║ ╚>type: UNDEFINED
+  ║ ╚>SINGLE_VALUE: CONST type: STRING value: Hello world
+  ╠>IF
+  ║ ╠>==
+  ║ ║ ╠>Variable
+  ║ ║ ║ ╠>Name: m
+  ║ ║ ║ ╚>type: UNDEFINED
+  ║ ║ ╚>Variable
+  ║ ║   ╠>Name: n
+  ║ ║   ╚>type: UNDEFINED
+  ║ ╚>BLOCK
+  ║   ╠>IF
+  ║   ║ ╠>>=
+  ║   ║ ║ ╠>Variable
+  ║   ║ ║ ║ ╠>Name: m
+  ║   ║ ║ ║ ╚>type: UNDEFINED
+  ║   ║ ║ ╚>Variable
+  ║   ║ ║   ╠>Name: n
+  ║   ║ ║   ╚>type: UNDEFINED
+  ║   ║ ╚>PRINT
+  ║   ║   ╚>Variable
+  ║   ║     ╠>Name: res
+  ║   ║     ╚>type: UNDEFINED
+  ║   ╚>BREAK
+  ╠>=
+  ║ ╠>SINGLE_FROM_MATRIX
+  ║ ║ ╠>Variable
+  ║ ║ ║ ╠>Name: E1
+  ║ ║ ║ ╚>type: MATRIX
+  ║ ║ ╠>SINGLE_VALUE: CONST type: INT value: 2
+  ║ ║ ╚>SINGLE_VALUE: CONST type: INT value: 3
+  ║ ╚>MINUS
+  ║   ╠>SINGLE_VALUE: CONST type: INT value: 14
+  ║   ╚>SINGLE_VALUE: CONST type: INT value: 4
+  ╠>=
+  ║ ╠>ROW_FROM_MATRIX
+  ║ ║ ╠>Variable
+  ║ ║ ║ ╠>Name: E1
+  ║ ║ ║ ╚>type: MATRIX
+  ║ ║ ╚>SINGLE_VALUE: CONST type: INT value: 2
+  ║ ╚>ROW
+  ║   ╠>SINGLE_VALUE: CONST type: INT value: 1
+  ║   ╠>SINGLE_VALUE: CONST type: INT value: 2
+  ║   ╚>SINGLE_VALUE: CONST type: INT value: 3
+  ╠>=
+  ║ ╠>Variable
+  ║ ║ ╠>Name: x1
+  ║ ║ ╚>type: UNDEFINED
+  ║ ╚>SINGLE_VALUE: CONST type: FLOAT value: 0.2
+  ╠>=
+  ║ ╠>Variable
+  ║ ║ ╠>Name: x2
+  ║ ║ ╚>type: UNDEFINED
+  ║ ╚>SINGLE_VALUE: CONST type: FLOAT value: 2.0
+  ╠>=
+  ║ ╠>Variable
+  ║ ║ ╠>Name: x3
+  ║ ║ ╚>type: UNDEFINED
+  ║ ╚>SINGLE_VALUE: CONST type: FLOAT value: 2.2
+  ╠>=
+  ║ ╠>Variable
+  ║ ║ ╠>Name: x4
+  ║ ║ ╚>type: UNDEFINED
+  ║ ╚>UMINUS
+  ║   ╚>SINGLE_VALUE: CONST type: FLOAT value: 0.2
+  ╠>PRINT
+  ║ ╠>UMINUS
+  ║ ║ ╚>SINGLE_VALUE: CONST type: INT value: 2
+  ║ ╠>PLUS
+  ║ ║ ╠>SINGLE_VALUE: CONST type: INT value: 4
+  ║ ║ ╚>SINGLE_VALUE: CONST type: INT value: 4
+  ║ ╚>SINGLE_VALUE: CONST type: STRING value: blah
+  ╠>For variable: self
+  ║ ╠>RANGE
+  ║ ║ ╠>SINGLE_VALUE: CONST type: INT value: 1
+  ║ ║ ╠>Variable
+  ║ ║ ║ ╠>Name: N
+  ║ ║ ║ ╚>type: UNDEFINED
+  ║ ╚>For variable: j
+  ║   ╠>RANGE
+  ║   ║ ╠>Variable
+  ║   ║ ║ ╠>Name: self
+  ║   ║ ║ ╚>type: UNDEFINED
+  ║   ║ ╠>Variable
+  ║   ║ ║ ╠>Name: M
+  ║   ║ ║ ╚>type: UNDEFINED
+  ║   ╚>PRINT
+  ║     ╠>Variable
+  ║     ║ ╠>Name: self
+  ║     ║ ╚>type: UNDEFINED
+  ║     ╚>Variable
+  ║       ╠>Name: j
+  ║       ╚>type: UNDEFINED
+  ╚>For variable: self
+    ╠>RANGE
+    ║ ╠>SINGLE_VALUE: CONST type: INT value: 1
+    ║ ╠>MINUS
+    ║ ║ ╠>PLUS
+    ║ ║ ║ ╠>SINGLE_VALUE: CONST type: INT value: 2
+    ║ ║ ║ ╚>SINGLE_VALUE: CONST type: INT value: 2
+    ║ ║ ╚>SINGLE_VALUE: CONST type: INT value: 2
+    ╚>EMPTY

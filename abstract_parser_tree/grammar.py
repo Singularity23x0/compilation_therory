@@ -1,8 +1,7 @@
 import ply.yacc as yacc
-import tree_draw as tree
-from TreeART import *
-import treeDrawART
+from abstract_parser_tree.structure import *
 from lexer import *
+from abstract_parser_tree.draw import TreePrinter
 
 precedence = (
     ('nonassoc', 'IFX'),
@@ -17,7 +16,7 @@ precedence = (
 def p_program1(p):
     """program : segment"""
     p[0] = Block(p[1])
-    treeDrawART.TreePrinter("resART.txt").draw(p[0])
+    TreePrinter("resART.txt").draw(p[0])
 
 
 def p_program2(p):
@@ -324,4 +323,4 @@ def p_error(p):
         print("Unexpected end of input")
 
 
-parserA = yacc.yacc()
+PARSER = yacc.yacc()

@@ -158,8 +158,8 @@ class Operator:
     "UMINUS",
     "TRANSPOSE"]
 
-    def operatorName(i):
-        return Operator.T[i-1]
+    def operator_name(self):
+        return Operator.T[self - 1]
 
 
 class ArithmeticExpressionUnary:

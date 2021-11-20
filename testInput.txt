@@ -34,9 +34,9 @@ x4 = -.2;
 
 print -2, 4+4, "blah";
 
-for i = 1:N
-  for j = i:M
-    print i, j;
+for self = 1:N
+  for j = self:M
+    print self, j;
 
-for i = 1:(2+2)-2
+for self = 1:(2+2)-2
     ;

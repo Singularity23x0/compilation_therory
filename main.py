@@ -1,6 +1,5 @@
-from parserTreeART import parserA
 import sys
-from parserTreeART import *
+from abstract_parser_tree import *
 
 if __name__ == '__main__':
 
@@ -17,4 +16,4 @@ if __name__ == '__main__':
     for token in lexer:
         print("(%d): %s(%s)" % (token.lineno, token.type, token.value))
 
-    parserA.parse(text, lexer=lexer)
+    PARSER.parse(text, lexer=lexer)
