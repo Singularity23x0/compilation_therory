@@ -1,6 +1,7 @@
 import ply.yacc as yacc
 import tree_draw as tree
 from TreeART import *
+import treeDrawART
 from lexer import *
 
 precedence = (
@@ -16,7 +17,7 @@ precedence = (
 def p_program1(p):
     """program : segment"""
     p[0] = Block(p[1])
-    print(p[0])
+    treeDrawART.TreePrinter("resART.txt").draw(p[0])
 
 
 def p_program2(p):
@@ -90,22 +91,22 @@ def p_single_valueID(p):
 
 def p_single_valueFLOAT(p):
     """single_value : FLOAT"""
-    p[0] = Value(p[1], Types.FLOAT)
+    p[0] = Value(p[1], Types.FLOAT,True)
 
 
 def p_single_valueINT(p):
     """single_value : INT"""
-    p[0] = Value(p[1], Types.INT)
+    p[0] = Value(p[1], Types.INT,True)
 
 
 def p_single_valueSTRING(p):
     """single_value : STRING"""
-    p[0] = Value(p[1], Types.STRING)
+    p[0] = Value(p[1], Types.STRING,True)
 
 
 def p_single_valueMATRIX(p):
     """single_value : matrix_definition"""
-    p[0] = Value(p[1], Types.MATRIX)
+    p[0] = Value(p[1], Types.MATRIX,True)
 
 
 def p_select_elementMD(p):

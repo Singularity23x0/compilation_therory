@@ -51,13 +51,18 @@ class Types:  # enum for types
     UNDEFINED = 0
     INT = 1
     FLOAT = 2
-    STRING = 4
-    MATRIX = 5
-    COLUMN = 6
+    STRING = 3
+    MATRIX = 4
+    COLUMN = 5
+    T = ["UNDEFINED", "INT", "FLOAT", "STRING", "MATRIX", "COLUMN"]
+
+    def typeName(i):
+        return Types.T[i]
 
 
 class Value:
-    def __init__(self, value, typeV):
+    def __init__(self, value, typeV,const=False):
+        self.const=const
         self.value = value
         self.typeV = typeV
 
@@ -115,7 +120,7 @@ class Vector:
             if type(vec) is Vector:
                 self.value += vec.value
             else:
-                raise ValueError("wrong val in vec for Vector is {0} not {1}".format(type(vec),Vector))
+                raise ValueError("wrong val in vec for Vector is {0} not {1}".format(type(vec), Vector))
 
     def __len__(self):
         return len(self.value)
@@ -132,30 +137,43 @@ class Function:
 
 
 class Operator:
-    PLUS=1
-    MINUS=2
-    STAR=3
-    SLASH=4
-    MPLUS=5
-    MMINUS=6
-    MSTAR=7
-    MSLASH=8
-    UMINUS=9
-    TRANSPOSE=10
+    PLUS = 1
+    MINUS = 2
+    STAR = 3
+    SLASH = 4
+    MPLUS = 5
+    MMINUS = 6
+    MSTAR = 7
+    MSLASH = 8
+    UMINUS = 9
+    TRANSPOSE = 10
+    T=["PLUS",
+    "MINUS",
+    "STAR",
+    "SLASH",
+    "MPLUS",
+    "MMINUS",
+    "MSTAR",
+    "MSLASH",
+    "UMINUS",
+    "TRANSPOSE"]
+
+    def operatorName(i):
+        return Operator.T[i-1]
 
 
 class ArithmeticExpressionUnary:
-    def __init__(self, element, operation):
+    def __init__(self, element, operator):
         self.element = element
-        self.operation = operation
+        self.operator = operator
 
 
 class ArithmeticExpressionBinary:
-    def __init__(self, left, right, operation):
+    def __init__(self, left, right, operator):
         self.left = left
         self.right = right
-        self.operation = operation
-        #self.reultType  # TODO
+        self.operator = operator
+        # self.reultType  # TODO
 
 
 class LogicalExpression:
