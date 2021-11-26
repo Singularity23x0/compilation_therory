@@ -23,7 +23,9 @@ class For:
 
 
 class Range:
-    def __init__(self, fro, to):  # TODO both int (undefined) check
+    def __init__(self, fro, to):
+        if not (types_strong_equivalent(fro.type, Types.INT) and types_strong_equivalent(to.type, Types.INT)):
+            raise ValueError("Range must be an INT")
         self.fro = fro
         self.to = to
 
@@ -60,54 +62,72 @@ class Types:  # enum for types
         return Types.T[i]
 
 
+def types_equivalent(type1, type2):
+    if min(type1, type2) == 0:
+        return True
+    if max(type1, type2) <= 2:
+        return True
+    return type1 == type2
+
+
+def types_strong_equivalent(type1, type2):
+    if min(type1, type2) == 0:
+        return True
+    return type1 == type2
+
+
 class Value:
-    def __init__(self, value, typeV,const=False):  # TODO auto const
+    def __init__(self, value, value_type, const=False):  # TODO auto const
         self.const = const
         self.value = value
-        self.typeV = typeV
+        self.type = value_type
 
 
 class Variable:
-    def __init__(self, name, typeV=Types.UNDEFINED):
+    def __init__(self, name, variable_type=Types.UNDEFINED):
         self.name = name
-        self.typeV = typeV
+        self.type = variable_type
 
 
 class SelectionSingle:  # TODO change name
-    def __init__(self, matrix, pos1, pos2):  # TODO pos int
+    def __init__(self, matrix, pos1, pos2):
+        if not (types_strong_equivalent(pos1.type, Types.INT) and types_strong_equivalent(pos2.type, Types.INT)):
+            raise ValueError("Matrix indices must be of the INT type")
         self.matrix = matrix
         self.pos1 = pos1
         self.pos2 = pos2
 
 
 class SelectColumn:
-    def __init__(self, matrix, pos):  # TODO pos int
+    def __init__(self, matrix, pos):
+        if not types_strong_equivalent(pos.type, Types.INT):
+            raise ValueError("Matrix indices must be of the INT type")
         self.matrix = matrix
         self.pos = pos
 
 
 class Matrix:
-    def __init__(self, rowList):
-        self.rowList = rowList
+    def __init__(self, rows_list):
+        self.rows_list = rows_list
         self.type = Types.UNDEFINED  # TODO findIt
-        self.rowSize = 0  # TODO calculate it
-        self.columnNum = len(rowList)  # TODO change name
+        self.row_size = 0  # TODO calculate it
+        self.columns_amount = len(rows_list)  # TODO change name
 
 
 class Row:
-    def __init__(self, valueList):
-        self.valueList = valueList
+    def __init__(self, values_list):
+        self.values_list = values_list
         self.type = Types.UNDEFINED  # TODO findIt
-        self.size = len(valueList)
+        self.size = len(values_list)
 
     def getSize(self):
         return self.size
 
     def getFirst(self):
-        return self.valueList[0]
+        return self.values_list[0]
 
     def getSecond(self):
-        return self.valueList[1]
+        return self.values_list[1]
 
 
 class Vector:
@@ -131,8 +151,10 @@ class Vector:
 
 class Function:
     def __init__(self, name, argument):  # returnType):
+        if not types_strong_equivalent(argument.type, Types.INT):
+            raise ValueError("The argument of {} must be an INT".format(name))
         self.name = name
-        self.arguments = argument  # TODO int
+        self.arguments = argument
         # self.returnType=returnType #no needed always matrix
 
 
@@ -147,33 +169,42 @@ class Operator:
     MSLASH = 8
     UMINUS = 9
     TRANSPOSE = 10
-    T=["PLUS",
-    "MINUS",
-    "STAR",
-    "SLASH",
-    "MPLUS",
-    "MMINUS",
-    "MSTAR",
-    "MSLASH",
-    "UMINUS",
-    "TRANSPOSE"]
+    T = ["PLUS",
+         "MINUS",
+         "STAR",
+         "SLASH",
+         "MPLUS",
+         "MMINUS",
+         "MSTAR",
+         "MSLASH",
+         "UMINUS",
+         "TRANSPOSE"]
 
     def operator_name(self):
         return Operator.T[self - 1]
 
 
 class ArithmeticExpressionUnary:
-    def __init__(self, element, operator):  # TODO Transpose matrix only
+    def __init__(self, element, operator):
+        if operator == Operator.TRANSPOSE and not types_equivalent(element.type, Types.MATRIX):
+            raise ValueError("Transposition operator used with invalid type {}".format(Types.typeName(element.type)))
         self.element = element
         self.operator = operator
+        self.type = element.type
 
 
 class ArithmeticExpressionBinary:
-    def __init__(self, left, right, operator):  # TODO matching types and operators
+    def __init__(self, left, right, operator):
+        if not types_equivalent(left.type, right.type):
+            raise ValueError("{} data type incompatible with {}"
+                             .format(Types.typeName(left.type), Types.typeName(right.type)))
+        if operator > 4 and not types_equivalent(left.type, Types.MATRIX):
+            raise ValueError("Type {} not compatible with the operator {}"
+                             .format(Types.typeName(max(left.type, right.type)), Operator.operator_name(operator)))
         self.left = left
         self.right = right
         self.operator = operator
-        # self.reultType  # TODO
+        self.type = max(left.type, right.type)
 
 
 class LogicalExpression:
@@ -184,7 +215,7 @@ class LogicalExpression:
 
 
 class Assignment:
-    def __init__(self, left, right, operator):   # TODO matching types and operators
+    def __init__(self, left, right, operator):  # TODO matching types and operators
         self.left = left
         self.right = right
         self.operator = operator

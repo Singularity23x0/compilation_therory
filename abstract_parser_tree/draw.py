@@ -87,19 +87,19 @@ class TreePrinter:
     def write(self, f, shift, last):
         TreePrinter.add_head(f, shift, last, "Variable")
         TreePrinter.add_head(f, shift + [last], False, "Name: " + self.name)
-        TreePrinter.add_head(f, shift + [last], True, "type: " + Types.typeName(self.typeV))
+        TreePrinter.add_head(f, shift + [last], True, "type: " + Types.typeName(self.type))
 
     @add_to_class(Value)
     def write(self, f, shift, last):
-        if self.const and self.typeV != Types.MATRIX:
+        if self.const and self.type != Types.MATRIX:
             TreePrinter.add_head(f, shift, last,
-                                 "SINGLE_VALUE: CONST" + " type: " + Types.typeName(self.typeV) + " value: " + str(
+                                 "SINGLE_VALUE: CONST," + " type: " + Types.typeName(self.type) + ", value: " + str(
                                      self.value))
         else:
             l = "SINGLE_VALUE:"
             if self.const:
                 l += " CONST"
-            TreePrinter.add_head(f, shift, last, l + " type: " + Types.typeName(self.typeV) + " ")
+            TreePrinter.add_head(f, shift, last, l + " type: " + Types.typeName(self.type) + " ")
             self.value.write(f, shift + [last], True)
 
     @add_to_class(Function)
@@ -127,17 +127,17 @@ class TreePrinter:
     @add_to_class(Matrix)
     def write(self, f, shift, last):
         TreePrinter.add_head(f, shift, last,
-                             "MATRIX type: " + Types.typeName(self.type) + " size:" + str(self.rowSize) + "x" + str(
-                                 self.columnNum))
+                             "MATRIX type: " + Types.typeName(self.type) + " size:" + str(self.row_size) + "x" + str(
+                                 self.columns_amount))
         i = 0
-        for instruction in self.rowList:
+        for instruction in self.rows_list:
             i += 1
-            instruction.write(f, shift + [last], i == len(self.rowList))
+            instruction.write(f, shift + [last], i == len(self.rows_list))
 
     @add_to_class(Row)
     def write(self, f, shift, last):
         TreePrinter.add_head(f, shift, last, "ROW")
-        self.valueList.write(f, shift + [last], True)
+        self.values_list.write(f, shift + [last], True)
 
     @add_to_class(Vector)
     def write(self, f, shift, last):

@@ -83,32 +83,32 @@ def p_group(p):
     p[0] = p[1]
 
 
-def p_single_valueID(p):
+def p_single_value_ID(p):
     """single_value : ID"""
     p[0] = Variable(p[1])
 
 
-def p_single_valueFLOAT(p):
+def p_single_value_FLOAT(p):
     """single_value : FLOAT"""
-    p[0] = Value(p[1], Types.FLOAT,True)
+    p[0] = Value(p[1], Types.FLOAT, True)
 
 
-def p_single_valueINT(p):
+def p_single_value_INT(p):
     """single_value : INT"""
-    p[0] = Value(p[1], Types.INT,True)
+    p[0] = Value(p[1], Types.INT, True)
 
 
 def p_single_valueSTRING(p):
     """single_value : STRING"""
-    p[0] = Value(p[1], Types.STRING,True)
+    p[0] = Value(p[1], Types.STRING, True)
 
 
-def p_single_valueMATRIX(p):
+def p_single_value_MATRIX(p):
     """single_value : matrix_definition"""
-    p[0] = Value(p[1], Types.MATRIX,True)
+    p[0] = Value(p[1], Types.MATRIX, True)
 
 
-def p_select_elementMD(p):
+def p_select_element_MD(p):
     """ select_element : matrix_definition matrix_row"""
     if p[2].getSize() == 2:
         p[0] = SelectionSingle(p[1], p[2].getFirst(), p[2].getSecont())
@@ -118,7 +118,7 @@ def p_select_elementMD(p):
         raise ValueError("error wrong index list size in {0}".format(p.lineno(1)))
 
 
-def p_select_elementID(p):
+def p_select_element_ID(p):
     """ select_element : ID matrix_row"""
     if p[2].getSize() == 2:
         p[0] = SelectionSingle(Variable(p[1], Types.MATRIX), p[2].getFirst(), p[2].getSecond())
@@ -128,7 +128,7 @@ def p_select_elementID(p):
         raise ValueError("error wrong index list size in {0}".format(p.lineno(1)))
 
 
-def p_select_elementBAB(p):
+def p_select_element_BAB(p):
     """ select_element : '(' arithmetic_expression ')' matrix_row"""
     if p[2].getSize() == 2:
         p[0] = SelectionSingle(Value(p[2], Types.MATRIX), p[4].getFirst(), p[4].getSecont())
@@ -138,22 +138,22 @@ def p_select_elementBAB(p):
         raise ValueError("error wrong index list size in {0}".format(p.lineno(1)))
 
 
-def p_matrix_definition1(p):
+def p_matrix_definition(p):
     """matrix_definition : '[' matrix_definition_inside ']' """
     p[0] = Value(Matrix(p[2]), Types.MATRIX)
 
 
-def p_matrix_definition2(p):
+def p_matrix_definition_by_function(p):
     """matrix_definition : matrix_gen_func """
     p[0] = Value(p[1], Types.MATRIX)
 
 
-def p_matrix_definition_inside1(p):
+def p_matrix_definition_inside_multi_row(p):
     """matrix_definition_inside : matrix_row ',' matrix_definition_inside"""
     p[0] = [p[1]] + p[3]
 
 
-def p_matrix_definition_inside2(p):
+def p_matrix_definition_inside(p):
     """matrix_definition_inside : matrix_row """
     p[0] = [p[1]]
 
@@ -163,19 +163,19 @@ def p_matrix_row(p):
     p[0] = Row(p[2])
 
 
-def p_vector1(p):
+def p_vector_multi_expression(p):
     """ vector : arithmetic_expression ',' vector"""
     p[0] = Vector(p[1], p[3])
 
 
-def p_vector2(p):
+def p_vector_expression(p):
     """ vector : arithmetic_expression"""
     p[0] = Vector(p[1])
 
 
 def p_matrix_gen_func(p):
     """ matrix_gen_func : func_name '(' arithmetic_expression ')' """
-    p[0] = Function(p[1],p[3])
+    p[0] = Function(p[1], p[3])
 
 
 def p_func_name(p):
@@ -185,44 +185,68 @@ def p_func_name(p):
     p[0] = p[1]
 
 
-def p_arithmetic_expression1p(p):
+def p_arithmetic_expression1_add(p):
     """arithmetic_expression : arithmetic_expression '+' arithmetic_expression"""
-    p[0] = ArithmeticExpressionBinary(p[1],p[3],Operator.PLUS)
+    try:
+        p[0] = ArithmeticExpressionBinary(p[1], p[3], Operator.PLUS)
+    except ValueError as error:
+        raise ValueError("Arithmetic expression error at line {0}: {1}".format(p.lineno(2), error)) from error
 
 
-def p_arithmetic_expression1m(p):
+def p_arithmetic_expression1_subtract(p):
     """arithmetic_expression : arithmetic_expression '-' arithmetic_expression"""
-    p[0] = ArithmeticExpressionBinary(p[1],p[3],Operator.MINUS)
+    try:
+        p[0] = ArithmeticExpressionBinary(p[1], p[3], Operator.MINUS)
+    except ValueError as error:
+        raise ValueError("Arithmetic expression error at line {0}: {1}".format(p.lineno(2), error)) from error
 
 
-def p_arithmetic_expression1st(p):
+def p_arithmetic_expression1_multiply(p):
     """arithmetic_expression : arithmetic_expression '*' arithmetic_expression"""
-    p[0] = ArithmeticExpressionBinary(p[1],p[3],Operator.STAR)
+    try:
+        p[0] = ArithmeticExpressionBinary(p[1], p[3], Operator.STAR)
+    except ValueError as error:
+        raise ValueError("Arithmetic expression error at line {0}: {1}".format(p.lineno(2), error)) from error
 
 
-def p_arithmetic_expression1sl(p):
+def p_arithmetic_expression1_divide(p):
     """arithmetic_expression : arithmetic_expression '/' arithmetic_expression"""
-    p[0] = ArithmeticExpressionBinary(p[1],p[3],Operator.SLASH)
+    try:
+        p[0] = ArithmeticExpressionBinary(p[1], p[3], Operator.SLASH)
+    except ValueError as error:
+        raise ValueError("Arithmetic expression error at line {0}: {1}".format(p.lineno(2), error)) from error
 
 
-def p_arithmetic_expression1(p):
+def p_arithmetic_expression1_mtx_add(p):
     """arithmetic_expression : arithmetic_expression MTX_SUM arithmetic_expression"""
-    p[0] = ArithmeticExpressionBinary(p[1],p[3],Operator.MPLUS)
+    try:
+        p[0] = ArithmeticExpressionBinary(p[1], p[3], Operator.MPLUS)
+    except ValueError as error:
+        raise ValueError("Arithmetic expression error at line {0}: {1}".format(p.lineno(2), error)) from error
 
 
-def p_arithmetic_expression1MM(p):
+def p_arithmetic_expression1_mtx_subtract(p):
     """arithmetic_expression : arithmetic_expression MTX_DIFFERENCE arithmetic_expression"""
-    p[0] = ArithmeticExpressionBinary(p[1],p[3],Operator.PLUS)
+    try:
+        p[0] = ArithmeticExpressionBinary(p[1], p[3], Operator.PLUS)
+    except ValueError as error:
+        raise ValueError("Arithmetic expression error at line {0}: {1}".format(p.lineno(2), error)) from error
 
 
-def p_arithmetic_expression1mst(p):
+def p_arithmetic_expression1_mtx_multiply(p):
     """arithmetic_expression : arithmetic_expression MTX_PRODUCT  arithmetic_expression"""
-    p[0] = ArithmeticExpressionBinary(p[1],p[3],Operator.MSTAR)
+    try:
+        p[0] = ArithmeticExpressionBinary(p[1], p[3], Operator.MSTAR)
+    except ValueError as error:
+        raise ValueError("Arithmetic expression error at line {0}: {1}".format(p.lineno(2), error)) from error
 
 
-def p_arithmetic_expression1msl(p):
+def p_arithmetic_expression1_mtx_divide(p):
     """arithmetic_expression : arithmetic_expression MTX_QUOTIENT  arithmetic_expression"""
-    p[0] = ArithmeticExpressionBinary(p[1],p[3],Operator.MSLASH)
+    try:
+        p[0] = ArithmeticExpressionBinary(p[1], p[3], Operator.MSLASH)
+    except ValueError as error:
+        raise ValueError("Arithmetic expression error at line {0}: {1}".format(p.lineno(2), error)) from error
 
 
 def p_arithmetic_expression2(p):
@@ -232,12 +256,15 @@ def p_arithmetic_expression2(p):
 
 def p_arithmetic_expression3(p):
     """arithmetic_expression : arithmetic_expression TRANSPOSE """
-    p[0] = ArithmeticExpressionUnary(p[1],Operator.TRANSPOSE)
+    try:
+        p[0] = ArithmeticExpressionUnary(p[1], Operator.TRANSPOSE)
+    except ValueError as error:
+        raise ValueError("Unary arithmetic expression error at line {0}: {1}".format(p.lineno(2), error)) from error
 
 
 def p_arithmetic_expression4(p):
     """arithmetic_expression : '-' arithmetic_expression %prec UMINUS """
-    p[0] = ArithmeticExpressionUnary(p[2],Operator.UMINUS)
+    p[0] = ArithmeticExpressionUnary(p[2], Operator.UMINUS)
 
 
 def p_arithmetic_expression5(p):
@@ -245,26 +272,26 @@ def p_arithmetic_expression5(p):
     p[0] = p[2]
 
 
-def p_expression1(p):
+def p_expression(p):
     """expression : assignment
     | print
     | return """
     p[0] = p[1]
 
 
-def p_expression2(p):
+def p_expression_break(p):
     """expression : BREAK"""
     p[0] = Break()
 
 
-def p_expression3(p):
+def p_expression_continue(p):
     """expression : CONT """
     p[0] = Cont()
 
 
 def p_logical_expression(p):
     """logical_expression : arithmetic_expression comparison_operator arithmetic_expression"""
-    p[0] = LogicalExpression(p[1],p[3],p[2])
+    p[0] = LogicalExpression(p[1], p[3], p[2])
 
 
 def p_comparison_operator(p):
@@ -288,12 +315,12 @@ def p_assignment_operator(p):
 
 def p_assignment1(p):
     """assignment : ID assignment_operator arithmetic_expression"""
-    p[0] = Assignment(Variable(p[1]),p[3],p[2])
+    p[0] = Assignment(Variable(p[1]), p[3], p[2])
 
 
 def p_assignment2(p):
     """assignment : select_element assignment_operator arithmetic_expression"""
-    p[0] = Assignment(p[1],p[3],p[2])
+    p[0] = Assignment(p[1], p[3], p[2])
 
 
 def p_assignment3(p):

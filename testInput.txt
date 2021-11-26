@@ -9,13 +9,13 @@ D4 /= A./B' ; # divide element-wise A with transpose of B
 
 E1 = [ [ 1, 2, 3],
        [ 4, 5, 6],
-       [ 7, 8, 0.0] ];
+       [ 7, 8, 0.0] ]';
 
-res1 = 60.500;
-res2 = 60.;
+res1 = 60.500 + 4;
+res2 = 60. - 66. * (-2);
 res3 = .500;
 res4 = 60.52E2;
-str = "Hello world";
+str = "Hello world" + "...and Michael";
 
 if (m==n) {
     if (m >= n)
