@@ -56,7 +56,10 @@ def p_for(p):
 
 def p_range(p):
     """range : arithmetic_expression ':' arithmetic_expression """
-    p[0] = Range(p[1], p[3])
+    try:
+        p[0] = Range(p[1], p[3])
+    except ValueError as error:
+        re_raise_error("Range", p, error)
 
 
 def p_while(p):
@@ -110,37 +113,50 @@ def p_single_value_MATRIX(p):
 
 def p_select_element_MD(p):
     """ select_element : matrix_definition matrix_row"""
-    if p[2].getSize() == 2:
-        p[0] = SelectionSingle(p[1], p[2].getFirst(), p[2].getSecont())
-    elif p[2].getSize() == 1:
-        p[0] = SelectColumn(p[1], p[2].getFirst())
-    else:
-        raise ValueError("error wrong index list size in {0}".format(p.lineno(1)))
+    try:
+        if p[2].getSize() == 2:
+            p[0] = SelectionSingle(p[1], p[2].getFirst(), p[2].getSecont())
+        elif p[2].getSize() == 1:
+            p[0] = SelectColumn(p[1], p[2].getFirst())
+        else:
+            raise IndexError("Wrong index list size in line {0}".format(p.lineno(1)))
+    except ValueError as error:
+        re_raise_error("Matrix subsection", p, error)
+        # raise ValueError("Error while selecting a Matrix portion in line {}: {}".format(p.lineni(1), error)) from error
 
 
 def p_select_element_ID(p):
     """ select_element : ID matrix_row"""
-    if p[2].getSize() == 2:
-        p[0] = SelectionSingle(Variable(p[1], Types.MATRIX), p[2].getFirst(), p[2].getSecond())
-    elif p[2].getSize() == 1:
-        p[0] = SelectColumn(Variable(p[1], Types.MATRIX), p[2].getFirst())
-    else:
-        raise ValueError("error wrong index list size in {0}".format(p.lineno(1)))
+    try:
+        if p[2].getSize() == 2:
+            p[0] = SelectionSingle(Variable(p[1], Types.MATRIX), p[2].getFirst(), p[2].getSecond())
+        elif p[2].getSize() == 1:
+            p[0] = SelectColumn(Variable(p[1], Types.MATRIX), p[2].getFirst())
+        else:
+            raise IndexError("Wrong index list size in line {0}".format(p.lineno(1)))
+    except ValueError as error:
+        re_raise_error("Matrix subsection", p, error)
 
 
 def p_select_element_BAB(p):
     """ select_element : '(' arithmetic_expression ')' matrix_row"""
-    if p[2].getSize() == 2:
-        p[0] = SelectionSingle(Value(p[2], Types.MATRIX), p[4].getFirst(), p[4].getSecont())
-    elif p[2].getSize() == 1:
-        p[0] = SelectColumn(Value(p[2], Types.MATRIX), p[2].getFirst())
-    else:
-        raise ValueError("error wrong index list size in {0}".format(p.lineno(1)))
+    try:
+        if p[2].getSize() == 2:
+            p[0] = SelectionSingle(Value(p[2], Types.MATRIX), p[4].getFirst(), p[4].getSecont())
+        elif p[2].getSize() == 1:
+            p[0] = SelectColumn(Value(p[2], Types.MATRIX), p[2].getFirst())
+        else:
+            raise IndexError("error wrong index list size in {0}".format(p.lineno(1)))
+    except ValueError as error:
+        re_raise_error("Matrix subsection", p, error)
 
 
 def p_matrix_definition(p):
     """matrix_definition : '[' matrix_definition_inside ']' """
-    p[0] = Value(Matrix(p[2]), Types.MATRIX)
+    try:
+        p[0] = Value(Matrix(p[2]), Types.MATRIX)
+    except ValueError as error:
+        re_raise_error("Matrix", p, error)
 
 
 def p_matrix_definition_by_function(p):
@@ -160,22 +176,34 @@ def p_matrix_definition_inside(p):
 
 def p_matrix_row(p):
     """ matrix_row : '[' vector ']' """
-    p[0] = Row(p[2])
+    try:
+        p[0] = Row(p[2])
+    except ValueError as error:
+        re_raise_error("Matrix", p, error)
 
 
 def p_vector_multi_expression(p):
     """ vector : arithmetic_expression ',' vector"""
-    p[0] = Vector(p[1], p[3])
+    try:
+        p[0] = Vector(p[1], p[3])
+    except ValueError as error:
+        re_raise_error("Matrix", p, error)
 
 
 def p_vector_expression(p):
     """ vector : arithmetic_expression"""
-    p[0] = Vector(p[1])
+    try:
+        p[0] = Vector(p[1])
+    except ValueError as error:
+        re_raise_error("Matrix", p, error)
 
 
 def p_matrix_gen_func(p):
     """ matrix_gen_func : func_name '(' arithmetic_expression ')' """
-    p[0] = Function(p[1], p[3])
+    try:
+        p[0] = Function(p[1], p[3])
+    except ValueError as error:
+        re_raise_error("Matrix", p, error)
 
 
 def p_func_name(p):
@@ -185,68 +213,51 @@ def p_func_name(p):
     p[0] = p[1]
 
 
+def create_arithmetic_expression(p, operator):
+    try:
+        p[0] = ArithmeticExpressionBinary(p[1], p[3], operator)
+    except ValueError as error:
+        re_raise_error("Arithmetic expression", p, error)
+
+
 def p_arithmetic_expression1_add(p):
     """arithmetic_expression : arithmetic_expression '+' arithmetic_expression"""
-    try:
-        p[0] = ArithmeticExpressionBinary(p[1], p[3], Operator.PLUS)
-    except ValueError as error:
-        raise ValueError("Arithmetic expression error at line {0}: {1}".format(p.lineno(2), error)) from error
+    create_arithmetic_expression(p, Operator.PLUS)
 
 
 def p_arithmetic_expression1_subtract(p):
     """arithmetic_expression : arithmetic_expression '-' arithmetic_expression"""
-    try:
-        p[0] = ArithmeticExpressionBinary(p[1], p[3], Operator.MINUS)
-    except ValueError as error:
-        raise ValueError("Arithmetic expression error at line {0}: {1}".format(p.lineno(2), error)) from error
+    create_arithmetic_expression(p, Operator.MINUS)
 
 
 def p_arithmetic_expression1_multiply(p):
     """arithmetic_expression : arithmetic_expression '*' arithmetic_expression"""
-    try:
-        p[0] = ArithmeticExpressionBinary(p[1], p[3], Operator.STAR)
-    except ValueError as error:
-        raise ValueError("Arithmetic expression error at line {0}: {1}".format(p.lineno(2), error)) from error
+    create_arithmetic_expression(p, Operator.STAR)
 
 
 def p_arithmetic_expression1_divide(p):
     """arithmetic_expression : arithmetic_expression '/' arithmetic_expression"""
-    try:
-        p[0] = ArithmeticExpressionBinary(p[1], p[3], Operator.SLASH)
-    except ValueError as error:
-        raise ValueError("Arithmetic expression error at line {0}: {1}".format(p.lineno(2), error)) from error
+    create_arithmetic_expression(p, Operator.SLASH)
 
 
 def p_arithmetic_expression1_mtx_add(p):
     """arithmetic_expression : arithmetic_expression MTX_SUM arithmetic_expression"""
-    try:
-        p[0] = ArithmeticExpressionBinary(p[1], p[3], Operator.MPLUS)
-    except ValueError as error:
-        raise ValueError("Arithmetic expression error at line {0}: {1}".format(p.lineno(2), error)) from error
+    create_arithmetic_expression(p, Operator.MPLUS)
 
 
 def p_arithmetic_expression1_mtx_subtract(p):
     """arithmetic_expression : arithmetic_expression MTX_DIFFERENCE arithmetic_expression"""
-    try:
-        p[0] = ArithmeticExpressionBinary(p[1], p[3], Operator.PLUS)
-    except ValueError as error:
-        raise ValueError("Arithmetic expression error at line {0}: {1}".format(p.lineno(2), error)) from error
+    create_arithmetic_expression(p, Operator.MMINUS)
 
 
 def p_arithmetic_expression1_mtx_multiply(p):
     """arithmetic_expression : arithmetic_expression MTX_PRODUCT  arithmetic_expression"""
-    try:
-        p[0] = ArithmeticExpressionBinary(p[1], p[3], Operator.MSTAR)
-    except ValueError as error:
-        raise ValueError("Arithmetic expression error at line {0}: {1}".format(p.lineno(2), error)) from error
+    create_arithmetic_expression(p, Operator.MSTAR)
 
 
 def p_arithmetic_expression1_mtx_divide(p):
     """arithmetic_expression : arithmetic_expression MTX_QUOTIENT  arithmetic_expression"""
-    try:
-        p[0] = ArithmeticExpressionBinary(p[1], p[3], Operator.MSLASH)
-    except ValueError as error:
-        raise ValueError("Arithmetic expression error at line {0}: {1}".format(p.lineno(2), error)) from error
+    create_arithmetic_expression(p, Operator.MSLASH)
 
 
 def p_arithmetic_expression2(p):
@@ -259,7 +270,7 @@ def p_arithmetic_expression3(p):
     try:
         p[0] = ArithmeticExpressionUnary(p[1], Operator.TRANSPOSE)
     except ValueError as error:
-        raise ValueError("Unary arithmetic expression error at line {0}: {1}".format(p.lineno(2), error)) from error
+        re_raise_error("Unary arithmetic", p, error)
 
 
 def p_arithmetic_expression4(p):
@@ -291,7 +302,10 @@ def p_expression_continue(p):
 
 def p_logical_expression(p):
     """logical_expression : arithmetic_expression comparison_operator arithmetic_expression"""
-    p[0] = LogicalExpression(p[1], p[3], p[2])
+    try:
+        p[0] = LogicalExpression(p[1], p[3], p[2])
+    except ValueError as error:
+        re_raise_error("Logical expression", p, error)
 
 
 def p_comparison_operator(p):
@@ -313,19 +327,26 @@ def p_assignment_operator(p):
     p[0] = p[1]  # TODO add enum
 
 
+def create_assignment(p):
+    try:
+        p[0] = Assignment(Variable(p[1]), p[3], p[2])
+    except ValueError as error:
+        re_raise_error("Assignment", p, error)
+
+
 def p_assignment1(p):
     """assignment : ID assignment_operator arithmetic_expression"""
-    p[0] = Assignment(Variable(p[1]), p[3], p[2])
+    create_assignment(p)
 
 
 def p_assignment2(p):
     """assignment : select_element assignment_operator arithmetic_expression"""
-    p[0] = Assignment(p[1], p[3], p[2])
+    create_assignment(p)
 
 
 def p_assignment3(p):
     """assignment : select_element assignment_operator matrix_row"""
-    p[0] = Assignment(p[1], p[3], p[2])
+    create_assignment(p)
 
 
 def p_print(p):
@@ -348,6 +369,10 @@ def p_error(p):
         print("Syntax error at line {0}: LexToken({1}, '{2}')".format(p.lineno, p.type, p.value))
     else:
         print("Unexpected end of input")
+
+
+def re_raise_error(name, p, source):
+    raise ValueError("{} error in line {}: {}".format(name, p.lineno(1), source)) from source
 
 
 PARSER = yacc.yacc()

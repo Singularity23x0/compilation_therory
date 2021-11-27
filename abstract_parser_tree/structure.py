@@ -43,10 +43,10 @@ class If:
 
 
 class IfElse:
-    def __init__(self, condition, inside, insideElse):
+    def __init__(self, condition, inside, inside_else):
         self.condition = condition
         self.inside = inside
-        self.insideElse = insideElse
+        self.insideElse = inside_else
 
 
 class Types:  # enum for types
@@ -77,7 +77,7 @@ def types_strong_equivalent(type1, type2):
 
 
 class Value:
-    def __init__(self, value, value_type, const=False):  # TODO auto const
+    def __init__(self, value, value_type, const=False):  # TODO auto const??
         self.const = const
         self.value = value
         self.type = value_type
@@ -89,13 +89,14 @@ class Variable:
         self.type = variable_type
 
 
-class SelectionSingle:  # TODO change name
+class SelectionSingle:
     def __init__(self, matrix, pos1, pos2):
         if not (types_strong_equivalent(pos1.type, Types.INT) and types_strong_equivalent(pos2.type, Types.INT)):
             raise ValueError("Matrix indices must be of the INT type")
         self.matrix = matrix
         self.pos1 = pos1
         self.pos2 = pos2
+        self.type = matrix.type
 
 
 class SelectColumn:
@@ -109,15 +110,22 @@ class SelectColumn:
 class Matrix:
     def __init__(self, rows_list):
         self.rows_list = rows_list
-        self.type = Types.UNDEFINED  # TODO findIt
-        self.row_size = 0  # TODO calculate it
-        self.columns_amount = len(rows_list)  # TODO change name
+        self.type = analyze_types(rows_list)
+        if self.type is None:
+            raise ValueError("Matrix rows must be of compatible types")
+        self.rows_amount = len(rows_list)
+        self.columns_amount = rows_list[0].size
+        for row in rows_list:
+            if self.columns_amount != row.size:
+                raise ValueError("All Matrix rows must be of the same length")
 
 
 class Row:
     def __init__(self, values_list):
         self.values_list = values_list
-        self.type = Types.UNDEFINED  # TODO findIt
+        self.type = analyze_types(values_list)
+        if self.type is None:
+            raise ValueError("Row values must be of compatible types")
         self.size = len(values_list)
 
     def getSize(self):
@@ -130,6 +138,15 @@ class Row:
         return self.values_list[1]
 
 
+def analyze_types(of):
+    universal_type = of[0].type
+    for element in of:
+        if not types_equivalent(element.type, universal_type):
+            return None
+        universal_type = max(universal_type, element.type)
+    return universal_type
+
+
 class Vector:
     def __init__(self, value=None, vec=None):
         self.value = list()
@@ -140,7 +157,7 @@ class Vector:
             if type(vec) is Vector:
                 self.value += vec.value
             else:
-                raise ValueError("wrong val in vec for Vector is {0} not {1}".format(type(vec), Vector))
+                raise ValueError("Wrong value passed to Vector - should be {0}, not {1}".format(type(vec), Vector))
 
     def __len__(self):
         return len(self.value)
@@ -152,7 +169,7 @@ class Vector:
 class Function:
     def __init__(self, name, argument):  # returnType):
         if not types_strong_equivalent(argument.type, Types.INT):
-            raise ValueError("The argument of {} must be an INT".format(name))
+            raise ValueError("The argument of {} must be an INT".format(name))  # TODO upper impl
         self.name = name
         self.arguments = argument
         # self.returnType=returnType #no needed always matrix
@@ -208,14 +225,24 @@ class ArithmeticExpressionBinary:
 
 
 class LogicalExpression:
-    def __init__(self, left, right, operator):  # TODO matching types
+    def __init__(self, left, right, operator):
+        if not types_equivalent(left.type, right.type):
+            raise ValueError("Cannot compare {} with {}".format(left.type, right.type))
         self.left = left
         self.right = right
         self.operator = operator
 
 
 class Assignment:
-    def __init__(self, left, right, operator):  # TODO matching types and operators
+    def __init__(self, left, right, operator):
+        if not types_equivalent(left.type, right.type):
+            raise ValueError("Cannot use {} for {} and {}".format(operator,
+                                                                  Types.typeName(left.type),
+                                                                  Types.typeName(right.type)))
+        if operator[0] == '.' and not types_equivalent(left.type, Types.MATRIX):
+            raise ValueError("Cannot use {} for the {} type".format(Operator.operator_name(operator),
+                                                                    Types.typeName(left.type),
+                                                                    Types.typeName(right.type)))
         self.left = left
         self.right = right
         self.operator = operator

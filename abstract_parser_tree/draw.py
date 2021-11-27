@@ -86,7 +86,7 @@ class TreePrinter:
     @add_to_class(Variable)
     def write(self, f, shift, last):
         TreePrinter.add_head(f, shift, last, "Variable")
-        TreePrinter.add_head(f, shift + [last], False, "Name: " + self.name)
+        TreePrinter.add_head(f, shift + [last], False, "Name: " + str(self.name))
         TreePrinter.add_head(f, shift + [last], True, "type: " + Types.typeName(self.type))
 
     @add_to_class(Value)
@@ -127,7 +127,7 @@ class TreePrinter:
     @add_to_class(Matrix)
     def write(self, f, shift, last):
         TreePrinter.add_head(f, shift, last,
-                             "MATRIX type: " + Types.typeName(self.type) + " size:" + str(self.row_size) + "x" + str(
+                             "MATRIX type: " + Types.typeName(self.type) + " size:" + str(self.rows_amount) + "x" + str(
                                  self.columns_amount))
         i = 0
         for instruction in self.rows_list:
