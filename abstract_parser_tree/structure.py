@@ -76,17 +76,29 @@ def types_strong_equivalent(type1, type2):
     return type1 == type2
 
 
-class Value:
-    def __init__(self, value, value_type, const=False):  # TODO auto const??
+def get_type(val):  # TODO make
+    if isinstance(val,int):
+        return Types.INT
+    if isinstance(val,float):
+        return Types.FLOAT
+    if isinstance(val,str):
+        return Types.STRING
+    return val.type
+
+
+class Value:  # is_matrix : 0 -> false, 1 -> true, -1 -> unknown
+    def __init__(self, value, is_matrix=0, const=False):
         self.const = const
         self.value = value
-        self.type = value_type
+        self.type = get_type(value)
+        self.is_matrix = is_matrix
 
 
 class Variable:
     def __init__(self, name, variable_type=Types.UNDEFINED):
         self.name = name
         self.type = variable_type
+        self.is_matrix = -1
 
 
 class SelectionSingle:
@@ -99,11 +111,12 @@ class SelectionSingle:
         self.type = matrix.type
 
 
-class SelectColumn:
+class SelectRow:
     def __init__(self, matrix, pos):
         if not types_strong_equivalent(pos.type, Types.INT):
             raise ValueError("Matrix indices must be of the INT type")
         self.matrix = matrix
+        self.type = matrix.type
         self.pos = pos
 
 
@@ -172,6 +185,7 @@ class Function:
             raise ValueError("The argument of {} must be an INT".format(name))  # TODO upper impl
         self.name = name
         self.arguments = argument
+        self.type = Types.INT
         # self.returnType=returnType #no needed always matrix
 
 
@@ -203,11 +217,12 @@ class Operator:
 
 class ArithmeticExpressionUnary:
     def __init__(self, element, operator):
-        if operator == Operator.TRANSPOSE and not types_equivalent(element.type, Types.MATRIX):
+        if operator == Operator.TRANSPOSE and element.is_matrix == 0:
             raise ValueError("Transposition operator used with invalid type {}".format(Types.typeName(element.type)))
         self.element = element
         self.operator = operator
         self.type = element.type
+        self.is_matrix = element.is_matrix
 
 
 class ArithmeticExpressionBinary:
@@ -222,6 +237,7 @@ class ArithmeticExpressionBinary:
         self.right = right
         self.operator = operator
         self.type = max(left.type, right.type)
+        self.is_matrix = left.is_matrix
 
 
 class LogicalExpression:
@@ -233,16 +249,13 @@ class LogicalExpression:
         self.operator = operator
 
 
-class Assignment:
+class Assignment:  # TODO check complex type
     def __init__(self, left, right, operator):
         if not types_equivalent(left.type, right.type):
             raise ValueError("Cannot use {} for {} and {}".format(operator,
                                                                   Types.typeName(left.type),
                                                                   Types.typeName(right.type)))
-        if operator[0] == '.' and not types_equivalent(left.type, Types.MATRIX):
-            raise ValueError("Cannot use {} for the {} type".format(Operator.operator_name(operator),
-                                                                    Types.typeName(left.type),
-                                                                    Types.typeName(right.type)))
+
         self.left = left
         self.right = right
         self.operator = operator

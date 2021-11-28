@@ -93,22 +93,22 @@ def p_single_value_ID(p):
 
 def p_single_value_FLOAT(p):
     """single_value : FLOAT"""
-    p[0] = Value(p[1], Types.FLOAT, True)
+    p[0] = Value(p[1], const=True)
 
 
 def p_single_value_INT(p):
     """single_value : INT"""
-    p[0] = Value(p[1], Types.INT, True)
+    p[0] = Value(p[1], const=True)
 
 
 def p_single_valueSTRING(p):
     """single_value : STRING"""
-    p[0] = Value(p[1], Types.STRING, True)
+    p[0] = Value(p[1], const=True)
 
 
 def p_single_value_MATRIX(p):
     """single_value : matrix_definition"""
-    p[0] = Value(p[1], Types.MATRIX, True)
+    p[0] = Value(p[1], is_matrix=1, const=True)
 
 
 def p_select_element_MD(p):
@@ -117,7 +117,7 @@ def p_select_element_MD(p):
         if p[2].getSize() == 2:
             p[0] = SelectionSingle(p[1], p[2].getFirst(), p[2].getSecont())
         elif p[2].getSize() == 1:
-            p[0] = SelectColumn(p[1], p[2].getFirst())
+            p[0] = SelectRow(p[1], p[2].getFirst())
         else:
             raise IndexError("Wrong index list size in line {0}".format(p.lineno(1)))
     except ValueError as error:
@@ -129,9 +129,9 @@ def p_select_element_ID(p):
     """ select_element : ID matrix_row"""
     try:
         if p[2].getSize() == 2:
-            p[0] = SelectionSingle(Variable(p[1], Types.MATRIX), p[2].getFirst(), p[2].getSecond())
+            p[0] = SelectionSingle(Variable(p[1]), p[2].getFirst(), p[2].getSecond())
         elif p[2].getSize() == 1:
-            p[0] = SelectColumn(Variable(p[1], Types.MATRIX), p[2].getFirst())
+            p[0] = SelectRow(Variable(p[1]), p[2].getFirst())
         else:
             raise IndexError("Wrong index list size in line {0}".format(p.lineno(1)))
     except ValueError as error:
@@ -142,9 +142,9 @@ def p_select_element_BAB(p):
     """ select_element : '(' arithmetic_expression ')' matrix_row"""
     try:
         if p[2].getSize() == 2:
-            p[0] = SelectionSingle(Value(p[2], Types.MATRIX), p[4].getFirst(), p[4].getSecont())
+            p[0] = SelectionSingle(Value(p[2]), p[4].getFirst(), p[4].getSecont())
         elif p[2].getSize() == 1:
-            p[0] = SelectColumn(Value(p[2], Types.MATRIX), p[2].getFirst())
+            p[0] = SelectRow(Value(p[2]), p[2].getFirst())
         else:
             raise IndexError("error wrong index list size in {0}".format(p.lineno(1)))
     except ValueError as error:
@@ -154,14 +154,14 @@ def p_select_element_BAB(p):
 def p_matrix_definition(p):
     """matrix_definition : '[' matrix_definition_inside ']' """
     try:
-        p[0] = Value(Matrix(p[2]), Types.MATRIX)
+        p[0] = Value(Matrix(p[2]),is_matrix=1)
     except ValueError as error:
         re_raise_error("Matrix", p, error)
 
 
 def p_matrix_definition_by_function(p):
     """matrix_definition : matrix_gen_func """
-    p[0] = Value(p[1], Types.MATRIX)
+    p[0] = Value(p[1], is_matrix=1)
 
 
 def p_matrix_definition_inside_multi_row(p):
@@ -329,14 +329,17 @@ def p_assignment_operator(p):
 
 def create_assignment(p):
     try:
-        p[0] = Assignment(Variable(p[1]), p[3], p[2])
+        p[0] = Assignment(p[1], p[3], p[2])
     except ValueError as error:
         re_raise_error("Assignment", p, error)
 
 
 def p_assignment1(p):
     """assignment : ID assignment_operator arithmetic_expression"""
-    create_assignment(p)
+    try:
+        p[0] = Assignment(Variable(p[1]), p[3], p[2])
+    except ValueError as error:
+        re_raise_error("Assignment", p, error)
 
 
 def p_assignment2(p):

@@ -91,7 +91,7 @@ class TreePrinter:
 
     @add_to_class(Value)
     def write(self, f, shift, last):
-        if self.const and self.type != Types.MATRIX:
+        if self.const and self.is_matrix != 1:
             TreePrinter.add_head(f, shift, last,
                                  "SINGLE_VALUE: CONST," + " type: " + Types.typeName(self.type) + ", value: " + str(
                                      self.value))
@@ -182,7 +182,7 @@ class TreePrinter:
         self.pos1.write(f, shift + [last], False)
         self.pos2.write(f, shift + [last], True)
 
-    @add_to_class(SelectColumn)
+    @add_to_class(SelectRow)
     def write(self, f, shift, last):
         TreePrinter.add_head(f, shift, last, "ROW_FROM_MATRIX")
         self.matrix.write(f, shift + [last], False)
