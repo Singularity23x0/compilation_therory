@@ -117,6 +117,7 @@ class SelectRow:
         self.matrix = matrix
         self.type = matrix.type
         self.pos = pos
+        self.size = matrix.columns_amount
 
 
 class Matrix:
@@ -251,12 +252,17 @@ class LogicalExpression:
         self.operator = operator
 
 
-class Assignment:  # TODO check complex type
+class Assignment:
     def __init__(self, left, right, operator):
+        if isinstance(left, SelectRow):
+            if not isinstance(right, Row):
+                raise ValueError("Invalid assignment to a matrix row")
+            if left.size != right.size:
+                raise ValueError("Invalid assignment to a matrix row due to differing sizes")
         if not types_equivalent(left.type, right.type):
-            raise ValueError("Cannot use {} for {} and {}".format(operator,
-                                                                  Types.typeName(left.type),
-                                                                  Types.typeName(right.type)))
+            raise ValueError("Incompatible types: {} and {}".format(operator,
+                                                                    Types.typeName(left.type),
+                                                                    Types.typeName(right.type)))
 
         self.left = left
         self.right = right
