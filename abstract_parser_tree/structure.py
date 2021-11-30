@@ -54,9 +54,8 @@ class Types:  # enum for types
     INT = 1
     FLOAT = 2
     STRING = 3
-    MATRIX = 4
     COLUMN = 5
-    T = ["UNDEFINED", "INT", "FLOAT", "STRING", "MATRIX", "COLUMN"]
+    T = ["UNDEFINED", "INT", "FLOAT", "STRING", "COLUMN"]
 
     def typeName(i):
         return Types.T[i]
@@ -77,11 +76,11 @@ def types_strong_equivalent(type1, type2):
 
 
 def get_type(val):  # TODO make
-    if isinstance(val,int):
+    if isinstance(val, int):
         return Types.INT
-    if isinstance(val,float):
+    if isinstance(val, float):
         return Types.FLOAT
-    if isinstance(val,str):
+    if isinstance(val, str):
         return Types.STRING
     return val.type
 
@@ -182,10 +181,11 @@ class Vector:
 class Function:
     def __init__(self, name, argument):  # returnType):
         if not types_strong_equivalent(argument.type, Types.INT):
-            raise ValueError("The argument of {} must be an INT".format(name))  # TODO upper impl
+            raise ValueError("The argument of {} must be an INT".format(name))
         self.name = name
         self.arguments = argument
         self.type = Types.INT
+        self.is_matrix = 1
         # self.returnType=returnType #no needed always matrix
 
 
@@ -218,7 +218,7 @@ class Operator:
 class ArithmeticExpressionUnary:
     def __init__(self, element, operator):
         if operator == Operator.TRANSPOSE and element.is_matrix == 0:
-            raise ValueError("Transposition operator used with invalid type {}".format(Types.typeName(element.type)))
+            raise ValueError("Transposition operator must be applied to a matrix")
         self.element = element
         self.operator = operator
         self.type = element.type
@@ -227,12 +227,12 @@ class ArithmeticExpressionUnary:
 
 class ArithmeticExpressionBinary:
     def __init__(self, left, right, operator):
+        if operator in range(5, 9) and (left.is_matrix == 0 or right.is_matrix == 0):
+            raise ValueError("Operator {} can only be used with matrices"
+                             .format(Operator.operator_name(operator)))
         if not types_equivalent(left.type, right.type):
             raise ValueError("{} data type incompatible with {}"
                              .format(Types.typeName(left.type), Types.typeName(right.type)))
-        if operator > 4 and not types_equivalent(left.type, Types.MATRIX):
-            raise ValueError("Type {} not compatible with the operator {}"
-                             .format(Types.typeName(max(left.type, right.type)), Operator.operator_name(operator)))
         self.left = left
         self.right = right
         self.operator = operator
@@ -242,6 +242,8 @@ class ArithmeticExpressionBinary:
 
 class LogicalExpression:
     def __init__(self, left, right, operator):
+        if max(left.is_matrix, right.is_matrix) == 1:
+            raise ValueError("Cannot use {} to compare matrices".format(Operator.operator_name(operator)))
         if not types_equivalent(left.type, right.type):
             raise ValueError("Cannot compare {} with {}".format(left.type, right.type))
         self.left = left
