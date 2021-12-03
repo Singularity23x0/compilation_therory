@@ -117,7 +117,9 @@ class SelectRow:
         self.matrix = matrix
         self.type = matrix.type
         self.pos = pos
-        if type(matrix) is not Variable:
+        if type(matrix) is Value:
+            self.size = matrix.value.columns_amount
+        elif type(matrix) is Matrix:
             self.size = matrix.columns_amount
         else:
             self.size = None
@@ -190,6 +192,12 @@ class Function:
         self.arguments = argument
         self.type = Types.INT
         self.is_matrix = 1
+        if type(self.arguments.value) is type(1):
+            self.rows_amount = self.arguments.value
+            self.columns_amount = self.arguments.value
+        else:
+            self.rows_amount = None
+            self.columns_amount = None
         # self.returnType=returnType #no needed always matrix
 
 
@@ -261,10 +269,15 @@ class LogicalExpression:
 class Assignment:
     def __init__(self, left, right, operator):
         if isinstance(left, SelectRow):
-            if not isinstance(right, Row):
+            if not isinstance(right, Row) and not isinstance(right, SelectRow):
                 raise ValueError("Invalid assignment to a matrix row")
+            if not isinstance(left.matrix, Variable):
+                raise ValueError("Invalid assignment not to a variable")
             if left.size != right.size and left.size is not None and right.size is not None:
                 raise ValueError("Invalid assignment to a matrix row due to differing sizes")
+        if isinstance(left, SelectionSingle):
+            if not isinstance(left.matrix, Variable):
+                raise ValueError("Invalid assignment not to a variable")
         if not types_equivalent(left.type, right.type):
             raise ValueError("Incompatible types: {} and {}".format(operator,
                                                                     Types.typeName(left.type),

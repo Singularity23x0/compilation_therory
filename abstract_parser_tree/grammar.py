@@ -141,10 +141,10 @@ def p_select_element_ID(p):
 def p_select_element_BAB(p):
     """ select_element : '(' arithmetic_expression ')' matrix_row"""
     try:
-        if p[2].getSize() == 2:
-            p[0] = SelectionSingle(Value(p[2]), p[4].getFirst(), p[4].getSecont())
-        elif p[2].getSize() == 1:
-            p[0] = SelectRow(Value(p[2]), p[2].getFirst())
+        if p[4].getSize() == 2:
+            p[0] = SelectionSingle(p[2], p[4].getFirst(), p[4].getSecond())
+        elif p[4].getSize() == 1:
+            p[0] = SelectRow(p[2], p[4].getFirst())
         else:
             raise IndexError("error wrong index list size in {0}".format(p.lineno(1)))
     except ValueError as error:
@@ -315,7 +315,7 @@ def p_comparison_operator(p):
     | NOT_EQUAL
     | SMALLER_OR_EQUAL
     | LARGER_OR_EQUAL"""
-    p[0] = p[1]  # TODO add enum
+    p[0] = p[1]
 
 
 def p_assignment_operator(p):
@@ -324,7 +324,7 @@ def p_assignment_operator(p):
     | SUBTRACT
     | MULTIPLY
     | DIVIDE """
-    p[0] = p[1]  # TODO add enum
+    p[0] = p[1]
 
 
 def create_assignment(p):
@@ -349,6 +349,11 @@ def p_assignment2(p):
 
 def p_assignment3(p):
     """assignment : select_element assignment_operator matrix_row"""
+    create_assignment(p)
+
+
+def p_assignment4(p):
+    """assignment : select_element assignment_operator select_element"""
     create_assignment(p)
 
 
