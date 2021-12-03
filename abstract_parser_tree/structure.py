@@ -117,7 +117,10 @@ class SelectRow:
         self.matrix = matrix
         self.type = matrix.type
         self.pos = pos
-        self.size = matrix.columns_amount
+        if type(matrix) is not Variable:
+            self.size = matrix.columns_amount
+        else:
+            self.size = None
 
 
 class Matrix:
@@ -231,6 +234,9 @@ class ArithmeticExpressionBinary:
         if operator in range(5, 9) and (left.is_matrix == 0 or right.is_matrix == 0):
             raise ValueError("Operator {} can only be used with matrices"
                              .format(Operator.operator_name(operator)))
+        if operator not in range(5, 9) and (left.is_matrix == 1 or right.is_matrix == 1):
+            raise ValueError("Operator {} can not be used with matrices"
+                             .format(Operator.operator_name(operator)))
         if not types_equivalent(left.type, right.type):
             raise ValueError("{} data type incompatible with {}"
                              .format(Types.typeName(left.type), Types.typeName(right.type)))
@@ -257,7 +263,7 @@ class Assignment:
         if isinstance(left, SelectRow):
             if not isinstance(right, Row):
                 raise ValueError("Invalid assignment to a matrix row")
-            if left.size != right.size:
+            if left.size != right.size and left.size is not None and right.size is not None:
                 raise ValueError("Invalid assignment to a matrix row due to differing sizes")
         if not types_equivalent(left.type, right.type):
             raise ValueError("Incompatible types: {} and {}".format(operator,
