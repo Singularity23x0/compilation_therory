@@ -341,6 +341,13 @@ def p_assignment1(p):
     except ValueError as error:
         re_raise_error("Assignment", p, error)
 
+def p_assignment11(p):
+    """assignment : ID assignment_operator select_element"""
+    try:
+        p[0] = Assignment(Variable(p[1]), p[3], p[2])
+    except ValueError as error:
+        re_raise_error("Assignment", p, error)
+
 
 def p_assignment2(p):
     """assignment : select_element assignment_operator arithmetic_expression"""
