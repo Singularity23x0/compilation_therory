@@ -269,12 +269,11 @@ class LogicalExpression:
 class Assignment:
     def __init__(self, left, right, operator):
         if isinstance(left, SelectRow):
-            if not isinstance(right, Row) and not isinstance(right, Value):
+            if not isinstance(right, Row) and not isinstance(right, SelectRow):
                 raise ValueError("Invalid assignment to a matrix row")
             if not isinstance(left.matrix, Variable):
                 raise ValueError("Invalid assignment not to a variable")
-            right_size = right.size if isinstance(right, Row) else right.value.size
-            if left.size != right_size and left.size is not None and right_size is not None:
+            if left.size != right.size and left.size is not None and right.size is not None:
                 raise ValueError("Invalid assignment to a matrix row due to differing sizes")
         if isinstance(left, SelectionSingle):
             if not isinstance(left.matrix, Variable):

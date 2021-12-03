@@ -117,7 +117,7 @@ def p_single_value_SELECT(p):
 
 
 def p_select_element_MD(p):
-    """ select_element : matrix_definition '[' single_value ',' single_value ']'"""
+    """ select_element : matrix_definition '[' arithmetic_expression ',' arithmetic_expression ']'"""
     try:
         p[0] = SelectionSingle(p[1], p[3], p[5])
         # if p[2].getSize() == 2:
@@ -132,7 +132,7 @@ def p_select_element_MD(p):
 
 
 def p_select_element_ID(p):
-    """ select_element : ID '[' single_value ',' single_value ']'"""
+    """ select_element : ID '[' arithmetic_expression ',' arithmetic_expression ']'"""
     try:
         p[0] = SelectionSingle(Variable(p[1]), p[3], p[5])
         # if p[2].getSize() == 2:
@@ -146,7 +146,7 @@ def p_select_element_ID(p):
 
 
 def p_select_element_BAB(p):
-    """ select_element : '(' arithmetic_expression ')' '[' single_value ',' single_value ']'"""
+    """ select_element : '(' arithmetic_expression ')' '[' arithmetic_expression ',' arithmetic_expression ']'"""
     try:
         p[0] = SelectionSingle(p[2], p[5], p[7])
         # if p[4].getSize() == 2:
@@ -160,7 +160,7 @@ def p_select_element_BAB(p):
 
 
 def p_select_row_MD(p):
-    """ select_row : matrix_definition '[' single_value ']'"""
+    """ select_row : matrix_definition '[' arithmetic_expression ']'"""
     try:
         p[0] = SelectRow(p[1], p[3])
         # if p[2].getSize() == 2:
@@ -175,7 +175,7 @@ def p_select_row_MD(p):
 
 
 def p_select_row_ID(p):
-    """ select_row : ID '[' single_value ']'"""
+    """ select_row : ID '[' arithmetic_expression ']'"""
     try:
         p[0] = SelectRow(Variable(p[1]), p[3])
         # if p[2].getSize() == 2:
@@ -189,7 +189,7 @@ def p_select_row_ID(p):
 
 
 def p_select_row_BAB(p):
-    """ select_row : '(' arithmetic_expression ')' '[' single_value ']'"""
+    """ select_row : '(' arithmetic_expression ')' '[' arithmetic_expression ']'"""
     try:
         p[0] = SelectRow(p[2], p[5])
         # if p[4].getSize() == 2:
@@ -410,6 +410,11 @@ def p_assignment4(p):
 
 def p_print(p):
     """ print : PRINT vector"""
+    p[0] = Print(p[2])
+
+
+def p_print_row(p):
+    """ print : PRINT select_row"""
     p[0] = Print(p[2])
 
 
