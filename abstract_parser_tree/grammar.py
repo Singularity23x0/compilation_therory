@@ -116,88 +116,50 @@ def p_single_value_SELECT(p):
     p[0] = Value(p[1], const=False)
 
 
-def p_select_element_MD(p):
-    """ select_element : matrix_definition '[' arithmetic_expression ',' arithmetic_expression ']'"""
-    try:
-        p[0] = SelectionSingle(p[1], p[3], p[5])
-        # if p[2].getSize() == 2:
-        #     p[0] = SelectionSingle(p[1], p[2].getFirst(), p[2].getSecond())
-        # elif p[2].getSize() == 1:
-        #     p[0] = SelectRow(p[1], p[2].getFirst())
-        # else:
-        #     raise IndexError("Wrong index list size in line {0}".format(p.lineno(1)))
-    except ValueError as error:
-        re_raise_error("Matrix subsection", p, error)
-        # raise ValueError("Error while selecting a Matrix portion in line {}: {}".format(p.lineni(1), error)) from error
+# def p_select_element_MD(p):
+#     """ select_element : matrix_definition '[' arithmetic_expression ',' arithmetic_expression ']'"""
+#     try:
+#         p[0] = SelectionSingle(p[1], p[3], p[5])
+#     except ValueError as error:
+#         re_raise_error("Matrix subsection", p, error)
 
 
-def p_select_element_ID(p):
-    """ select_element : ID '[' arithmetic_expression ',' arithmetic_expression ']'"""
-    try:
-        p[0] = SelectionSingle(Variable(p[1]), p[3], p[5])
-        # if p[2].getSize() == 2:
-        #     p[0] = SelectionSingle(Variable(p[1]), p[2].getFirst(), p[2].getSecond())
-        # elif p[2].getSize() == 1:
-        #     p[0] = SelectRow(Variable(p[1]), p[2].getFirst())
-        # else:
-        #     raise IndexError("Wrong index list size in line {0}".format(p.lineno(1)))
-    except ValueError as error:
-        re_raise_error("Matrix subsection", p, error)
+# def p_select_element_ID(p):
+#     """ select_element : ID '[' arithmetic_expression ',' arithmetic_expression ']'"""
+#     try:
+#         p[0] = SelectionSingle(Variable(p[1]), p[3], p[5])
+#     except ValueError as error:
+#         re_raise_error("Matrix subsection", p, error)
 
 
 def p_select_element_BAB(p):
-    """ select_element : '(' arithmetic_expression ')' '[' arithmetic_expression ',' arithmetic_expression ']'"""
+    """ select_element : arithmetic_expression '[' arithmetic_expression ',' arithmetic_expression ']'"""
     try:
-        p[0] = SelectionSingle(p[2], p[5], p[7])
-        # if p[4].getSize() == 2:
-        #     p[0] = SelectionSingle(p[2], p[4].getFirst(), p[4].getSecond())
-        # elif p[4].getSize() == 1:
-        #     p[0] = SelectRow(p[2], p[4].getFirst())
-        # else:
-        #     raise IndexError("error wrong index list size in {0}".format(p.lineno(1)))
+        p[0] = SelectionSingle(p[1], p[3], p[5])
     except ValueError as error:
         re_raise_error("Matrix subsection", p, error)
 
 
-def p_select_row_MD(p):
-    """ select_row : matrix_definition '[' arithmetic_expression ']'"""
-    try:
-        p[0] = SelectRow(p[1], p[3])
-        # if p[2].getSize() == 2:
-        #     p[0] = SelectionSingle(p[1], p[2].getFirst(), p[2].getSecond())
-        # elif p[2].getSize() == 1:
-        #     p[0] = SelectRow(p[1], p[2].getFirst())
-        # else:
-        #     raise IndexError("Wrong index list size in line {0}".format(p.lineno(1)))
-    except ValueError as error:
-        re_raise_error("Matrix subsection", p, error)
-        # raise ValueError("Error while selecting a Matrix portion in line {}: {}".format(p.lineni(1), error)) from error
-
-
-def p_select_row_ID(p):
-    """ select_row : ID '[' arithmetic_expression ']'"""
-    try:
-        p[0] = SelectRow(Variable(p[1]), p[3])
-        # if p[2].getSize() == 2:
-        #     p[0] = SelectionSingle(Variable(p[1]), p[2].getFirst(), p[2].getSecond())
-        # elif p[2].getSize() == 1:
-        #     p[0] = SelectRow(Variable(p[1]), p[2].getFirst())
-        # else:
-        #     raise IndexError("Wrong index list size in line {0}".format(p.lineno(1)))
-    except ValueError as error:
-        re_raise_error("Matrix subsection", p, error)
+# def p_select_row_MD(p):
+#     """ select_row : matrix_definition '[' arithmetic_expression ']'"""
+#     try:
+#         p[0] = SelectRow(p[1], p[3])
+#     except ValueError as error:
+#         re_raise_error("Matrix subsection", p, error)
+#
+#
+# def p_select_row_ID(p):
+#     """ select_row : ID '[' arithmetic_expression ']'"""
+#     try:
+#         p[0] = SelectRow(Variable(p[1]), p[3])
+#     except ValueError as error:
+#         re_raise_error("Matrix subsection", p, error)
 
 
 def p_select_row_BAB(p):
-    """ select_row : '(' arithmetic_expression ')' '[' arithmetic_expression ']'"""
+    """ select_row : arithmetic_expression '[' arithmetic_expression ']'"""
     try:
-        p[0] = SelectRow(p[2], p[5])
-        # if p[4].getSize() == 2:
-        #     p[0] = SelectionSingle(p[2], p[4].getFirst(), p[4].getSecond())
-        # elif p[4].getSize() == 1:
-        #     p[0] = SelectRow(p[2], p[4].getFirst())
-        # else:
-        #     raise IndexError("error wrong index list size in {0}".format(p.lineno(1)))
+        p[0] = SelectRow(p[1], p[3])
     except ValueError as error:
         re_raise_error("Matrix subsection", p, error)
 
@@ -231,6 +193,11 @@ def p_matrix_row(p):
         p[0] = Row(p[2])
     except ValueError as error:
         re_raise_error("Matrix", p, error)
+
+
+def p_matrix_row_select(p):
+    """ matrix_row : select_row """
+    p[0] = p[1]
 
 
 def p_vector_multi_expression(p):
@@ -403,9 +370,9 @@ def p_assignment3(p):
     create_assignment(p)
 
 
-def p_assignment4(p):
-    """assignment : select_row assignment_operator select_row"""
-    create_assignment(p)
+# def p_assignment4(p):
+#     """assignment : select_row assignment_operator select_row"""
+#     create_assignment(p)
 
 
 def p_print(p):
