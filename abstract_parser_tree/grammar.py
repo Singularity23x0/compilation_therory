@@ -111,6 +111,11 @@ def p_single_value_MATRIX(p):
     p[0] = Value(p[1], is_matrix=1, const=True)
 
 
+def p_single_value_SELECT(p):
+    """single_value : select_element"""
+    p[0] = Value(p[1], const=False)
+
+
 def p_select_element_MD(p):
     """ select_element : matrix_definition matrix_row"""
     try:
@@ -154,7 +159,7 @@ def p_select_element_BAB(p):
 def p_matrix_definition(p):
     """matrix_definition : '[' matrix_definition_inside ']' """
     try:
-        p[0] = Value(Matrix(p[2]),is_matrix=1)
+        p[0] = Value(Matrix(p[2]), is_matrix=1)
     except ValueError as error:
         re_raise_error("Matrix", p, error)
 
@@ -341,12 +346,13 @@ def p_assignment1(p):
     except ValueError as error:
         re_raise_error("Assignment", p, error)
 
-def p_assignment11(p):
-    """assignment : ID assignment_operator select_element"""
-    try:
-        p[0] = Assignment(Variable(p[1]), p[3], p[2])
-    except ValueError as error:
-        re_raise_error("Assignment", p, error)
+
+# def p_assignment11(p):
+#     """assignment : ID assignment_operator select_element"""
+#     try:
+#         p[0] = Assignment(Variable(p[1]), p[3], p[2])
+#     except ValueError as error:
+#         re_raise_error("Assignment", p, error)
 
 
 def p_assignment2(p):
@@ -359,9 +365,9 @@ def p_assignment3(p):
     create_assignment(p)
 
 
-def p_assignment4(p):
-    """assignment : select_element assignment_operator select_element"""
-    create_assignment(p)
+# def p_assignment4(p):
+#     """assignment : select_element assignment_operator select_element"""
+#     create_assignment(p)
 
 
 def p_print(p):
