@@ -34,19 +34,18 @@ class Row(Type):
         return super().structure_equivalent(other) and compare_sizes(self.size, other.size)
 
 
-def compare_sizes(size1, size2):
-    return size1 is None or size2 is None or size1 == size2
-
-
 class CoreTypes:
     INT = 1
     FLOAT = 2
     STRING = 3
-    COLUMN = 5
-    T = ["INT", "FLOAT", "STRING", "COLUMN"]
+    T = ["INT", "FLOAT", "STRING"]
 
     def type_name(i):
         return CoreTypes.T[i]
+
+
+def compare_sizes(size1, size2):
+    return size1 is None or size2 is None or size1 == size2
 
 
 def core_types_compatible(core_type1, core_type2):
