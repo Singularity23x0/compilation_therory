@@ -79,32 +79,26 @@ class TreePrinter:
 
     @add_to_class(For)
     def write(self, f, shift, last):
-        TreePrinter.add_head(f, shift, last, "For variable: " + self.idv.name)
+        TreePrinter.add_head(f, shift, last, "FOR")
+        self.idv.write(f, shift + [last], False)
         self.rangeS.write(f, shift + [last], False)
         self.inside.write(f, shift + [last], True)
 
     @add_to_class(Variable)
     def write(self, f, shift, last):
-        TreePrinter.add_head(f, shift, last, "Variable")
-        TreePrinter.add_head(f, shift + [last], False, "Name: " + self.name)
-        TreePrinter.add_head(f, shift + [last], True, "type: " + Types.typeName(self.typeV))
+        TreePrinter.add_head(f, shift, last, str(self.name))
 
     @add_to_class(Value)
     def write(self, f, shift, last):
-        if self.const and self.typeV != Types.MATRIX:
-            TreePrinter.add_head(f, shift, last,
-                                 "SINGLE_VALUE: CONST" + " type: " + Types.typeName(self.typeV) + " value: " + str(
-                                     self.value))
+        if isinstance(self.value, (int, float, str)):
+            TreePrinter.add_head(f, shift, last, str(self.value))
         else:
-            l = "SINGLE_VALUE:"
-            if self.const:
-                l += " CONST"
-            TreePrinter.add_head(f, shift, last, l + " type: " + Types.typeName(self.typeV) + " ")
-            self.value.write(f, shift + [last], True)
+            self.value.write(f, shift, True)
 
     @add_to_class(Function)
     def write(self, f, shift, last):
-        TreePrinter.add_head(f, shift, last, "FUNCTION name: " + self.name + " to finish")
+        TreePrinter.add_head(f, shift, last, self.name)
+        self.arguments.write(f, shift + [last], True)
 
     @add_to_class(ArithmeticExpressionBinary)
     def write(self, f, shift, last):
@@ -125,18 +119,16 @@ class TreePrinter:
 
     @add_to_class(Matrix)
     def write(self, f, shift, last):
-        TreePrinter.add_head(f, shift, last,
-                             "MATRIX type: " + Types.typeName(self.type) + " size:" + str(self.rowSize) + "x" + str(
-                                 self.columnNum))
+        TreePrinter.add_head(f, shift, last, "MATRIX")
         i = 0
-        for instruction in self.rowList:
+        for instruction in self.rows_list:
             i += 1
-            instruction.write(f, shift + [last], i == len(self.rowList))
+            instruction.write(f, shift + [last], i == len(self.rows_list))
 
     @add_to_class(Row)
     def write(self, f, shift, last):
         TreePrinter.add_head(f, shift, last, "ROW")
-        self.valueList.write(f, shift + [last], True)
+        self.values_list.write(f, shift + [last], True)
 
     @add_to_class(Vector)
     def write(self, f, shift, last):
@@ -150,11 +142,17 @@ class TreePrinter:
         TreePrinter.add_head(f, shift, last, "PRINT")
         self.vector.write(f, shift + [last], True)
 
+    @add_to_class(Return)
+    def write(self, f, shift, last):
+        TreePrinter.add_head(f, shift, last, "Return")
+        if self.value:
+            self.value.write(f, shift + [last], True)
+
     @add_to_class(Range)
     def write(self, f, shift, last):
         TreePrinter.add_head(f, shift, last, "RANGE")
-        self.fro.write(f, shift + [last], last)
-        self.to.write(f, shift + [last], last)
+        self.fro.write(f, shift + [last], False)
+        self.to.write(f, shift + [last], True)
 
     @add_to_class(Empty)
     def write(self, f, shift, last):
@@ -170,13 +168,13 @@ class TreePrinter:
 
     @add_to_class(SelectionSingle)
     def write(self, f, shift, last):
-        TreePrinter.add_head(f, shift, last, "SINGLE_FROM_MATRIX")
+        TreePrinter.add_head(f, shift, last, "MATRIX CELL")
         self.matrix.write(f, shift + [last], False)
         self.pos1.write(f, shift + [last], False)
         self.pos2.write(f, shift + [last], True)
 
-    @add_to_class(SelectColumn)
+    @add_to_class(SelectRow)
     def write(self, f, shift, last):
-        TreePrinter.add_head(f, shift, last, "ROW_FROM_MATRIX")
+        TreePrinter.add_head(f, shift, last, "MATRIX ROW")
         self.matrix.write(f, shift + [last], False)
         self.pos.write(f, shift + [last], True)
