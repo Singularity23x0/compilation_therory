@@ -1,1 +1,1 @@
-from parser_tree.structure_plus_grammar import PARSER
+from parser_tree.grammar import PARSER

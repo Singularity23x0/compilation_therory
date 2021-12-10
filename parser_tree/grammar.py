@@ -1,7 +1,7 @@
 import ply.yacc as yacc
-from abstract_parser_tree.structure import *
+from parser_tree.structure import *
 from lexer import *
-from abstract_parser_tree.draw import TreePrinter
+from parser_tree.draw import TreePrinter
 
 precedence = (
     ('nonassoc', 'IFX'),
