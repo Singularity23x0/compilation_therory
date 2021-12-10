@@ -9,11 +9,11 @@ class Type:
         return self.__class__ == other.__class__
 
 
-class Generic(Type):
+class GenericType(Type):
     pass
 
 
-class Matrix(Type):
+class MatrixType(Type):
     def __init__(self, core_type, rows, cols):
         super().__init__(core_type)
         self.rows = rows
@@ -25,7 +25,7 @@ class Matrix(Type):
                compare_sizes(self.rows, other.rows)
 
 
-class Row(Type):
+class RowType(Type):
     def __init__(self, core_type, size):
         super().__init__(core_type)
         self.size = size
