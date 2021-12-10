@@ -20,7 +20,9 @@ class Matrix(Type):
         self.cols = cols
 
     def structure_equivalent(self, other):
-        return super().structure_equivalent(other) and self.rows == other.rows and self.cols == other.cols
+        return super().structure_equivalent(other) and \
+               compare_sizes(self.cols, other.cols) and \
+               compare_sizes(self.rows, other.rows)
 
 
 class Row(Type):
@@ -29,7 +31,11 @@ class Row(Type):
         self.size = size
 
     def structure_equivalent(self, other):
-        return super().structure_equivalent(other) and self.size == other.size
+        return super().structure_equivalent(other) and compare_sizes(self.size, other.size)
+
+
+def compare_sizes(size1, size2):
+    return size1 is None or size2 is None or size1 == size2
 
 
 class CoreTypes:
