@@ -8,6 +8,9 @@ class Type:
     def structure_equivalent(self, other):
         return self.__class__ == other.__class__
 
+    def get_size(self):
+        pass
+
 
 class GenericType(Type):
     pass
@@ -24,6 +27,9 @@ class MatrixType(Type):
                compare_sizes(self.cols, other.cols) and \
                compare_sizes(self.rows, other.rows)
 
+    def get_size(self):
+        return self.rows, self.cols
+
 
 class RowType(Type):
     def __init__(self, core_type, size):
@@ -32,6 +38,9 @@ class RowType(Type):
 
     def structure_equivalent(self, other):
         return super().structure_equivalent(other) and compare_sizes(self.size, other.size)
+
+    def get_size(self):
+        return self.size
 
 
 class CoreTypes:
