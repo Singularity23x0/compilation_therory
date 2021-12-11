@@ -11,6 +11,9 @@ class Type:
     def get_size(self):
         pass
 
+    def update_core_type(self, to):
+        self.core_type = to
+
 
 class GenericType(Type):
     pass
@@ -62,7 +65,7 @@ def core_types_compatible(core_type1, core_type2):
 
 
 def is_matrix(obj):
-    return isinstance(obj, Matrix)
+    return isinstance(obj, MatrixType)
 
 
 def equivalent(type1, type2):
@@ -72,7 +75,7 @@ def equivalent(type1, type2):
 
 
 def equal(type1, type2):
-    return type1 is type2
+    return type1 == type2
 
 
 if __name__ == "__main__":
