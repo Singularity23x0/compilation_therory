@@ -82,7 +82,7 @@ def get_type(val):  # TODO make
         return Types.FLOAT
     if isinstance(val, str):
         return Types.STRING
-    return val.type
+    return val.core_type
 
 
 class Value:  # is_matrix : 0 -> false, 1 -> true, -1 -> unknown
