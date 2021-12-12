@@ -1,7 +1,13 @@
 import ply.yacc as yacc
 from parser_tree.structure import *
 from lexer import *
-from parser_tree.draw import TreePrinter
+
+
+tree_structure = None
+
+
+def get_structure():
+    return tree_structure
 
 precedence = (
     ('nonassoc', 'IFX'),
@@ -16,7 +22,8 @@ precedence = (
 def p_program1(p):
     """program : segment"""
     p[0] = Block(p[1])
-    TreePrinter("resART.txt").draw(p[0])
+    global tree_structure
+    tree_structure = p[0]
 
 
 def p_program2(p):
@@ -154,14 +161,14 @@ def p_select_element_BAB(p):
 def p_matrix_definition(p):
     """matrix_definition : '[' matrix_definition_inside ']' """
     try:
-        p[0] = Value(Matrix(p[2]),is_matrix=1)
+        p[0] = Matrix(p[2])
     except ValueError as error:
         re_raise_error("Matrix", p, error)
 
 
 def p_matrix_definition_by_function(p):
     """matrix_definition : matrix_gen_func """
-    p[0] = Value(p[1], is_matrix=1)
+    p[0] = p[1]
 
 
 def p_matrix_definition_inside_multi_row(p):

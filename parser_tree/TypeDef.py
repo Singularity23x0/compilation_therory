@@ -1,21 +1,23 @@
-import Types
-import structure as struct
+import parser_tree.Types as Types
+import parser_tree.structure as struct
 
 
 class TypeDef:
     def __init__(self):
         pass
 
-    def get_type(self, operator, el1, el2=None):
+    def get_type(operator, el1, el2=None):
         if el2 is None:
             return get_type_unary(operator, el1)
         return get_type_binary(operator, el1, el2)
 
 
 def get_type_binary(operator, el1, el2):
+    if operator == "=":
+        return el2
     if not Types.equivalent(el1, el2):
         return None
-    if operator <= 4 and Types.is_matrix(el1):
+    if (operator <= 4 or operator in {"+=","-=","*=","/="}) and Types.is_matrix(el1):
         return None
     if 5 <= operator <= 8 and not Types.is_matrix(el1):
         return None

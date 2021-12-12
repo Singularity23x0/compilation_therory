@@ -1,6 +1,7 @@
 import sys
+import traceback
 from lexer import lexer
-from parser_tree import PARSER
+from parser_tree import PARSER,get_structure,TreePrinter,SemanticChecker
 
 if __name__ == '__main__':
 
@@ -18,3 +19,13 @@ if __name__ == '__main__':
     #     print("(%d): %s(%s)" % (token.lineno, token.type, token.value))
 
     PARSER.parse(text, lexer=lexer)
+    tree_structure = get_structure()
+    TreePrinter("resART.txt").draw(tree_structure)
+    S=SemanticChecker()
+    try:
+        S.visit(tree_structure)
+    except Exception as err:
+        print(err,traceback.format_exc())
+    for err in S.errorList:
+        print(err)
+

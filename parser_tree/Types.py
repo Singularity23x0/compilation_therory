@@ -14,6 +14,11 @@ class Type:
     def update_core_type(self, to):
         self.core_type = to
 
+    def __str__(self):
+        return self.__class__.__name__ + self.details()
+
+    def details(self):
+        return CoreTypes.type_name(self.core_type)
 
 class GenericType(Type):
     pass
@@ -33,6 +38,9 @@ class MatrixType(Type):
     def get_size(self):
         return self.rows, self.cols
 
+    def details(self):
+        return CoreTypes.type_name(self.core_type)+" "+str(self.rows)+"x"+str(self.cols)
+
 
 class RowType(Type):
     def __init__(self, core_type, size):
@@ -44,6 +52,9 @@ class RowType(Type):
 
     def get_size(self):
         return self.size
+
+    def details(self):
+        return CoreTypes.type_name(self.core_type)+" "+str(self.size)
 
 
 class CoreTypes:
