@@ -213,6 +213,8 @@ class SemanticChecker:
             self.errorList.append(node.get_line() + "variable " + node.left.name + " not declared")
         if typeE2 is None and isinstance(node.right, Variable):
             self.errorList.append(node.get_line() + "variable " + node.right.name + " not declared")
+        if typeE1 is None or typeE2 is None:
+            return None
         typeAll = TypeDef.get_type(node.operator, typeE1, typeE2)
         if typeAll == None:
             self.errorList.append(node.get_line() + "incorrect type {0} and {1} for operator {2}"
@@ -240,8 +242,13 @@ class SemanticChecker:
             typeE1 = typeAll
             self.symbolTable.addSymbol(node.left.name, typeE2)
         if not equal(typeE1, typeAll):
-            self.errorList.append(node.get_line() + "can not assign with {2} to different type {0} and {1}"
-                                  .format(typeE1, typeE2, node.operator))
+            if equivalent(typeE1, typeAll):
+                if not(typeE1.core_type==CoreTypes.FLOAT and typeAll.core_type==CoreTypes.INT):
+                    self.errorList.append(node.get_line() + "can not assign with {2} to different type {0} and {1}"
+                                          .format(typeE1, typeE2, node.operator))
+            else:
+                self.errorList.append(node.get_line() + "can not assign with {2} to different type {0} and {1}"
+                                      .format(typeE1, typeE2, node.operator))
 
     def visit_Print(self, node):
         for x in node.vector:

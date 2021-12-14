@@ -27,4 +27,22 @@ print very_imporatant_variable+very_imporatant_variable;
 very_imporatant_variable = (12+4)*7+2/4;
 
 a=[[1,2],[3,5.0]];
-a=very_imporatant_variable;
+b2=zeros(2);
+a=b2;
+ff=2.4;
+ff=very_imporatant_variable;
+early=21312;
+while(ff<=5.72){
+    a[1]=[ff,2*ff];
+    a=a.-b2;
+    if(ff>1)
+        for xx = 1:99
+            ff+=0.1;
+    else{
+        a3=123;
+        b3=72;
+        c3=a3+b3*78+2*a3;
+        ff+=c3;
+        ff=ff-early;
+    }
+}
