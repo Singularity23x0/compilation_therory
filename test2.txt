@@ -25,3 +25,6 @@ print very_imporatant_variable+very_imporatant_variable;
 }
 
 very_imporatant_variable = (12+4)*7+2/4;
+
+a=[[1,2],[3,5.0]];
+a=very_imporatant_variable;

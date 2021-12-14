@@ -158,7 +158,7 @@ class SemanticChecker:
                     self.errorList.append(node.get_line() + "row size difference in a matrix")
                     any_errors = True
                 if typeM != -1:
-                    typeTmp.core_type = min(typeM.core_type, typeTmp.core_type)
+                    typeTmp.core_type = max(typeM.core_type, typeTmp.core_type)
                 typeM = typeTmp
                 size = typeTmp.get_size()
         return None if any_errors else MatrixType(typeM.core_type, node.rows_amount, node.columns_amount)
@@ -175,7 +175,7 @@ class SemanticChecker:
                 self.errorList.append(node.get_line() + "types difference")
                 any_errors = True
             if typeM != -1:
-                typeTmp.core_type = min(typeM.core_type, typeTmp.core_type)
+                typeTmp.core_type = max(typeM.core_type, typeTmp.core_type)
             typeM = typeTmp
         return None if any_errors else RowType(typeM.core_type, node.size)
 
