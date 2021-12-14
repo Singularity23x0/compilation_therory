@@ -17,7 +17,7 @@ def get_type_binary(operator, el1, el2):
         return el2
     if not Types.equivalent(el1, el2):
         return None
-    if (operator <= 4 or operator in {"+=","-=","*=","/="}) and Types.is_matrix(el1):
+    if (operator <= 4 or operator in {"+=", "-=", "*=", "/="}) and Types.is_matrix(el1):
         return None
     if 5 <= operator <= 8 and not Types.is_matrix(el1):
         return None

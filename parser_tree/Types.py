@@ -20,6 +20,7 @@ class Type:
     def details(self):
         return CoreTypes.type_name(self.core_type)
 
+
 class GenericType(Type):
     pass
 
@@ -39,7 +40,7 @@ class MatrixType(Type):
         return self.rows, self.cols
 
     def details(self):
-        return CoreTypes.type_name(self.core_type)+" "+str(self.rows)+"x"+str(self.cols)
+        return CoreTypes.type_name(self.core_type) + " " + str(self.rows) + "x" + str(self.cols)
 
 
 class RowType(Type):
@@ -54,7 +55,7 @@ class RowType(Type):
         return self.size
 
     def details(self):
-        return CoreTypes.type_name(self.core_type)+" "+str(self.size)
+        return CoreTypes.type_name(self.core_type) + " " + str(self.size)
 
 
 class CoreTypes:
@@ -80,12 +81,16 @@ def is_matrix(obj):
 
 
 def equivalent(type1, type2):
+    if type1 is None or type2 is None:
+        return False
     return type1.structure_equivalent(type2) and \
            type2.structure_equivalent(type1) and \
            core_types_compatible(type1.core_type, type2.core_type)
 
 
 def equal(type1, type2):
+    if type1 is None or type2 is None:
+        return False
     return type1 == type2
 
 

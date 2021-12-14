@@ -388,7 +388,7 @@ def p_return2(p):
 
 def p_error(p):
     if p:
-        print("Syntax error at line {0}: LexToken({1}, '{2}')".format(p.lineno, p.core_type, p.value))
+        print("Syntax error at line {}: LexToken('{}')".format(p.lineno, p.value))
     else:
         print("Unexpected end of input")
 

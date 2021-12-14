@@ -1,7 +1,7 @@
 from parser_tree.SymbolTable import SymbolTable
 from parser_tree.TypeDef import TypeDef
 from parser_tree.Types import equal, equivalent, is_matrix, RowType, GenericType, CoreTypes, MatrixType
-from parser_tree.structure import Variable, Value, Matrix,Function,Operator
+from parser_tree.structure import Variable, Value, Matrix, Function, Operator
 
 
 class SemanticChecker:
@@ -43,10 +43,12 @@ class SemanticChecker:
         typeR = self.visit(node.to)
         if typeL is None and isinstance(node.fro, Variable):
             self.errorList.append("variable " + node.fro.name + " not declared")
+        elif not equal(typeL, GenericType(CoreTypes.INT)):
+            self.errorList.append("wrong type in range structure: range start must be an INT")
         if typeR is None and isinstance(node.to, Variable):
             self.errorList.append("variable " + node.to.name + " not declared")
-        if not equal(typeL, GenericType(CoreTypes.INT)) or not equal(typeR, GenericType(CoreTypes.INT)):
-            self.errorList.append("wrong type in range structure")
+        elif not equal(typeR, GenericType(CoreTypes.INT)):
+            self.errorList.append("wrong type in range structure: range end must be an INT")
 
     def visit_While(self, node):
         self.loopDepth += 1
@@ -64,7 +66,7 @@ class SemanticChecker:
         self.visit(node.insideElse)
 
     def visit_Value(self, node):
-        if isinstance(node.value, (Matrix,Function)):
+        if isinstance(node.value, (Matrix, Function)):
             return self.visit(node.value)
         A = {int: 1, float: 2, str: 3}
         return GenericType(A[type(node.value)])
@@ -76,81 +78,114 @@ class SemanticChecker:
         typeM = self.visit(node.matrix)
         typePos1 = self.visit(node.pos1)
         typePos2 = self.visit(node.pos2)
+        any_errors = typeM is None or typePos1 is None or typePos2 is None
         if typeM is None and isinstance(node.matrix, Variable):
             self.errorList.append("variable " + node.matrix.name + " not declared")
+            any_errors = True
         if typePos1 is None and isinstance(node.pos1, Variable):
             self.errorList.append("variable " + node.pos1.name + " not declared")
+            any_errors = True
+        elif not equal(typePos1, GenericType(CoreTypes.INT)):
+            self.errorList.append("first index must be an int")
+            any_errors = True
         if typePos2 is None and isinstance(node.pos2, Variable):
             self.errorList.append("variable " + node.pos2.name + " not declared")
-        if not is_matrix(typeM):
-            self.errorList.append("cannot index not matrix")
-        if not equal(typePos1, GenericType(CoreTypes.INT)) or not equal(typePos2, GenericType(CoreTypes.INT)):
-            self.errorList.append("cannot index with no int type")
+            any_errors = True
+        elif not equal(typePos2, GenericType(CoreTypes.INT)):
+            self.errorList.append("second index must be an int")
+            any_errors = True
         if isinstance(node.pos1, Value) and node.pos1.value < 0:
-            self.errorList.append("cannot index with no negative numbers")
+            self.errorList.append("cannot index with negative numbers")
+            any_errors = True
         if isinstance(node.pos2, Value) and node.pos2.value < 0:
-            self.errorList.append("cannot index with no negative numbers")
+            self.errorList.append("cannot index with negative numbers")
+            any_errors = True
+        if typeM is None:
+            return None
+        if not is_matrix(typeM):
+            self.errorList.append("can only index a matrix")
+            return None
         sizeX, sizeY = typeM.get_size()
         if isinstance(node.pos1, Value) and node.pos1.value >= sizeX and sizeX is not None:
-            self.errorList.append("index {0} out of range {1}".format(node.pos1.value,sizeX))
+            self.errorList.append("index {0} out of range {1}".format(node.pos1.value, sizeX))
+            any_errors = True
         if isinstance(node.pos2, Value) and node.pos2.value >= sizeY and sizeY is not None:
-            self.errorList.append("index {0} out of range {1}".format(node.pos2.value,sizeY))
-        return GenericType(typeM.core_type)
+            self.errorList.append("index {0} out of range {1}".format(node.pos2.value, sizeY))
+            any_errors = True
+        return None if any_errors else GenericType(typeM.core_type)
 
     def visit_SelectRow(self, node):
         typeM = self.visit(node.matrix)
         typePos = self.visit(node.pos)
+        any_errors = typeM is None or typePos is None
         if typeM is None and isinstance(node.matrix, Variable):
             self.errorList.append("variable " + node.matrix.name + " not declared")
+            any_errors = True
         if typePos is None and isinstance(node.pos, Variable):
             self.errorList.append("variable " + node.pos.name + " not declared")
-        if not is_matrix(typeM):
-            self.errorList.append("cannot index not matrix")
-        if not equal(typePos, GenericType(CoreTypes.INT)):
-            self.errorList.append("cannot index with no int type")
+            any_errors = True
+        elif not equal(typePos, GenericType(CoreTypes.INT)):
+            self.errorList.append("matrix row index must be an int")
+            any_errors = True
         if isinstance(node.pos, Value) and node.pos.value < 0:
-            self.errorList.append("cannot index with no negative numbers")
+            self.errorList.append("cannot index with negative numbers")
+            any_errors = True
+        if typeM is None:
+            return None
+        if not is_matrix(typeM):
+            self.errorList.append("can only index a matrix")
+            return None
         sizeX, sizeY = typeM.get_size()
         if isinstance(node.pos, Value) and node.pos.value >= sizeX and sizeX is not None:
-            self.errorList.append("index {0} out of range {1}".format(node.pos.value,sizeX))
-        return RowType(typeM.core_type, sizeY)
+            self.errorList.append("index {0} out of range {1}".format(node.pos.value, sizeX))
+            any_errors = True
+        return None if any_errors else RowType(typeM.core_type, sizeY)
 
     def visit_Matrix(self, node):
         typeM = -1
         size = -1
+        any_errors = False
         for x in node.rows_list:
             typeTmp = self.visit(x)
             if typeM != -1 and not equal(typeM, typeTmp):
-                self.errorList.append("types difference")
+                self.errorList.append("types difference in a matrix")
+                any_errors = True
             if size != -1 and size != typeTmp.get_size():
-                self.errorList.append("row size difference")
+                self.errorList.append("row size difference in a matrix")
+                any_errors = True
             typeM = typeTmp
             size = typeTmp.get_size()
-        return MatrixType(typeM.core_type, node.rows_amount, node.columns_amount)
+        return None if any_errors else MatrixType(typeM.core_type, node.rows_amount, node.columns_amount)
 
     def visit_Row(self, node):
         typeM = -1
+        any_errors = False
         for x in node.values_list:
             typeTmp = self.visit(x)
             if typeTmp is None and isinstance(x, Variable):
                 self.errorList.append("variable " + x.name + " not declared")
+                any_errors = True
             if typeM != -1 and not equal(typeM, typeTmp):
                 self.errorList.append("types difference")
+                any_errors = True
             typeM = typeTmp
-        return RowType(typeM.core_type, node.size)
+        return None if any_errors else RowType(typeM.core_type, node.size)
 
     def visit_Vector(self, node):
         print("visiting vector")  # for testing
 
     def visit_Function(self, node):
         typeS = self.visit(node.arguments)
+        any_errors = False
         if not equal(typeS, GenericType(CoreTypes.INT)):
             self.errorList.append("incorrect argument - wrong type {0}".format(typeS))
+            any_errors = True
         if isinstance(node.arguments, Value):
             if node.arguments.value < 1:
                 self.errorList.append("incorrect argument - wrong type {0}".format(typeS))
-            return MatrixType(CoreTypes.INT, node.arguments.value, node.arguments.value)
-        return MatrixType(CoreTypes.INT, None, None)
+                any_errors = True
+            return None if any_errors else MatrixType(CoreTypes.INT, node.arguments.value, node.arguments.value)
+        return None if any_errors else MatrixType(CoreTypes.INT, None, None)
 
     def visit_ArithmeticExpressionUnary(self, node):
         typeE = self.visit(node.element)
@@ -159,7 +194,7 @@ class SemanticChecker:
         typeAll = TypeDef.get_type(node.operator, typeE)
         if typeAll is None:
             self.errorList.append("incorrect type {0} for operator {1}"
-                                  .format(typeE,Operator.operator_name(node.operator)))
+                                  .format(typeE, Operator.operator_name(node.operator)))
         else:
             return typeAll
 
@@ -173,7 +208,7 @@ class SemanticChecker:
         typeAll = TypeDef.get_type(node.operator, typeE1, typeE2)
         if typeAll == None:
             self.errorList.append("incorrect type {0} and {1} for operator {2}"
-                                  .format(typeE1,typeE2,Operator.operator_name(node.operator)))
+                                  .format(typeE1, typeE2, Operator.operator_name(node.operator)))
         else:
             return typeAll
 
@@ -182,7 +217,7 @@ class SemanticChecker:
         typeE2 = self.visit(node.right)
         if not equivalent(typeE1, typeE2):
             self.errorList.append("can not compare different type {0} and {1} with {2}"
-                                  .format(typeE1,typeE2,node.operator))
+                                  .format(typeE1, typeE2, node.operator))
 
     def visit_Assignment(self, node):
         typeE1 = self.visit(node.left)
@@ -198,7 +233,7 @@ class SemanticChecker:
             self.symbolTable.addSymbol(node.left.name, typeE2)
         if not equal(typeE1, typeAll):
             self.errorList.append("can not assign with {2} to different type {0} and {1}"
-                                  .format(typeE1,typeE2,node.operator))
+                                  .format(typeE1, typeE2, node.operator))
 
     def visit_Print(self, node):
         for x in node.vector:
