@@ -10,3 +10,18 @@ k=2;
 b=k;
 c=b+k;
 c+=10;
+if(c==k)
+    for z = 1:100
+        if(k==1)
+            break;
+        else
+            continue;
+
+{
+
+very_imporatant_variable = "important data";
+print very_imporatant_variable+very_imporatant_variable;
+
+}
+
+very_imporatant_variable = (12+4)*7+2/4;

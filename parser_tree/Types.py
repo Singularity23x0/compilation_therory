@@ -65,7 +65,7 @@ class CoreTypes:
     T = ["INT", "FLOAT", "STRING"]
 
     def type_name(i):
-        return CoreTypes.T[i]
+        return CoreTypes.T[i-1]
 
 
 def compare_sizes(size1, size2):

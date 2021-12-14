@@ -23,11 +23,16 @@ def get_type_binary(operator, el1, el2):
         return None
     if not isinstance(operator,str) and operator >= 9:
         return None
+    if (el1.core_type==Types.CoreTypes.STRING or el2.core_type==Types.CoreTypes.STRING )\
+            and (not (operator == "=" or operator == "+=" or operator == 1) or el1.core_type!=el2.core_type):
+        return None
     el1.core_type = max(el1.core_type, el2.core_type)
     return el1
 
 
 def get_type_unary(operator, el):
+    if el.core_type == Types.CoreTypes.STRING:
+        return None
     if operator == struct.Operator.TRANSPOSE and Types.is_matrix(el):
         return Types.MatrixType(el.core_type, el.cols, el.rows)
     if operator == struct.Operator.UMINUS:
