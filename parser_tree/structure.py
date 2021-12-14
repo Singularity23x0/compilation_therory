@@ -1,4 +1,16 @@
-class Segment:
+class Node:
+    def __init__(self):
+        self.line = None
+
+    def set_line(self, line):
+        self.line = line
+        return self
+
+    def get_line(self):
+        return "Line unknown: " if self.line is None else "At line {}: ".format(self.line)
+
+
+class Segment(Node):
     def __init__(self, el, segment=None):
         if el is None:
             self.instructionList = None
@@ -9,20 +21,20 @@ class Segment:
                 self.instructionList = [el] + segment.instructionList
 
 
-class Block:
+class Block(Node):
     def __init__(self, segment):
         self.segment = segment
         # other
 
 
-class For:
+class For(Node):
     def __init__(self, idv, rangeS, inside):
         self.idv = idv
         self.rangeS = rangeS
         self.inside = inside
 
 
-class Range:
+class Range(Node):
     def __init__(self, fro, to):
         # if not (types_strong_equivalent(fro.type, Types.INT) and types_strong_equivalent(to.type, Types.INT)):
         #     raise ValueError("Range must be an INT")
@@ -30,26 +42,26 @@ class Range:
         self.to = to
 
 
-class While:
+class While(Node):
     def __init__(self, condition, inside):
         self.condition = condition
         self.inside = inside
 
 
-class If:
+class If(Node):
     def __init__(self, condition, inside):
         self.condition = condition
         self.inside = inside
 
 
-class IfElse:
+class IfElse(Node):
     def __init__(self, condition, inside, inside_else):
         self.condition = condition
         self.inside = inside
         self.insideElse = inside_else
 
 
-class Types:  # enum for types
+class Types(Node):  # enum for types
     UNDEFINED = 0
     INT = 1
     FLOAT = 2
@@ -85,7 +97,7 @@ def get_type(val):  # TODO make
     return val.core_type
 
 
-class Value:  # is_matrix : 0 -> false, 1 -> true, -1 -> unknown
+class Value(Node):  # is_matrix : 0 -> false, 1 -> true, -1 -> unknown
     def __init__(self, value, is_matrix=0, const=False):
         self.const = const
         self.value = value
@@ -93,14 +105,14 @@ class Value:  # is_matrix : 0 -> false, 1 -> true, -1 -> unknown
         # self.is_matrix = is_matrix
 
 
-class Variable:
+class Variable(Node):
     def __init__(self, name, variable_type=Types.UNDEFINED):
         self.name = name
         self.type = variable_type
         # self.is_matrix = -1
 
 
-class SelectionSingle:
+class SelectionSingle(Node):
     def __init__(self, matrix, pos1, pos2):
         # if not (types_strong_equivalent(pos1.type, Types.INT) and types_strong_equivalent(pos2.type, Types.INT)):
         #     raise ValueError("Matrix indices must be of the INT type")
@@ -110,7 +122,7 @@ class SelectionSingle:
         # self.type = matrix.type
 
 
-class SelectRow:
+class SelectRow(Node):
     def __init__(self, matrix, pos):
         # if not types_strong_equivalent(pos.type, Types.INT):
         #     raise ValueError("Matrix indices must be of the INT type")
@@ -125,7 +137,7 @@ class SelectRow:
         #     self.size = None
 
 
-class Matrix:
+class Matrix(Node):
     def __init__(self, rows_list):
         self.rows_list = rows_list
         # self.type = analyze_types(rows_list)
@@ -138,7 +150,7 @@ class Matrix:
         #         raise ValueError("All Matrix rows must be of the same length")
 
 
-class Row:
+class Row(Node):
     def __init__(self, values_list):
         self.values_list = values_list
         # self.type = analyze_types(values_list)
@@ -165,7 +177,7 @@ class Row:
 #     return universal_type
 
 
-class Vector:
+class Vector(Node):
     def __init__(self, value=None, vec=None):
         self.value = list()
         if value is not None:
@@ -181,7 +193,7 @@ class Vector:
         return self.value[item]
 
 
-class Function:
+class Function(Node):
     def __init__(self, name, argument):  # returnType):
         # if not types_strong_equivalent(argument.type, Types.INT):
         #     raise ValueError("The argument of {} must be an INT".format(name))
@@ -224,7 +236,7 @@ class Operator:
         return Operator.T[self - 1]
 
 
-class ArithmeticExpressionUnary:
+class ArithmeticExpressionUnary(Node):
     def __init__(self, element, operator):
         # if operator == Operator.TRANSPOSE and element.is_matrix == 0:
         #     raise ValueError("Transposition operator must be applied to a matrix")
@@ -234,7 +246,7 @@ class ArithmeticExpressionUnary:
         # self.is_matrix = element.is_matrix
 
 
-class ArithmeticExpressionBinary:
+class ArithmeticExpressionBinary(Node):
     def __init__(self, left, right, operator):
         # if operator in range(5, 9) and (left.is_matrix == 0 or right.is_matrix == 0):
         #     raise ValueError("Operator {} can only be used with matrices"
@@ -252,7 +264,7 @@ class ArithmeticExpressionBinary:
         # self.is_matrix = left.is_matrix
 
 
-class LogicalExpression:
+class LogicalExpression(Node):
     def __init__(self, left, right, operator):
         # if max(left.is_matrix, right.is_matrix) == 1:
         #     raise ValueError("Cannot use {} to compare matrices".format(Operator.operator_name(operator)))
@@ -263,7 +275,7 @@ class LogicalExpression:
         self.operator = operator
 
 
-class Assignment:
+class Assignment(Node):
     def __init__(self, left, right, operator):
         # if isinstance(left, SelectRow):
         #     if not isinstance(right, Row) and not isinstance(right, SelectRow):
@@ -285,23 +297,23 @@ class Assignment:
         self.operator = operator
 
 
-class Print:
+class Print(Node):
     def __init__(self, vector):
         self.vector = vector
 
 
-class Return:
+class Return(Node):
     def __init__(self, value):
         self.value = value
 
 
-class Break:
+class Break(Node):
     pass
 
 
-class Cont:
+class Cont(Node):
     pass
 
 
-class Empty:
+class Empty(Node):
     pass
