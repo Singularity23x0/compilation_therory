@@ -17,11 +17,11 @@ def get_type_binary(operator, el1, el2):
         return el2
     if not Types.equivalent(el1, el2):
         return None
-    if (operator <= 4 or operator in {"+=", "-=", "*=", "/="}) and Types.is_matrix(el1):
+    if (operator in {"+=", "-=", "*=", "/="} or operator <= 4) and Types.is_matrix(el1):
         return None
-    if 5 <= operator <= 8 and not Types.is_matrix(el1):
+    if not isinstance(operator,str) and 5 <= operator <= 8 and not Types.is_matrix(el1):
         return None
-    if operator >= 9:
+    if not isinstance(operator,str) and operator >= 9:
         return None
     el1.core_type = max(el1.core_type, el2.core_type)
     return el1

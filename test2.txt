@@ -1,0 +1,12 @@
+A=zeros(10);
+for i = 0:9{
+    for j = 0:9{
+        k=A[1,2];
+        print k," ";
+        }
+    print "\n";
+    }
+k=2;
+b=k;
+c=b+k;
+c+=10;
