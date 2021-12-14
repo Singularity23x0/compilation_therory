@@ -147,14 +147,17 @@ class SemanticChecker:
         any_errors = False
         for x in node.rows_list:
             typeTmp = self.visit(x)
-            if typeM != -1 and not equal(typeM, typeTmp):
-                self.errorList.append("types difference in a matrix")
-                any_errors = True
-            if size != -1 and size != typeTmp.get_size():
-                self.errorList.append("row size difference in a matrix")
-                any_errors = True
-            typeM = typeTmp
-            size = typeTmp.get_size()
+            if typeTmp is None:
+                return None
+            else:
+                if typeM != -1 and not equal(typeM, typeTmp):
+                    self.errorList.append("types difference in a matrix")
+                    any_errors = True
+                if size != -1 and size != typeTmp.get_size():
+                    self.errorList.append("row size difference in a matrix")
+                    any_errors = True
+                typeM = typeTmp
+                size = typeTmp.get_size()
         return None if any_errors else MatrixType(typeM.core_type, node.rows_amount, node.columns_amount)
 
     def visit_Row(self, node):
