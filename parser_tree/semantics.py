@@ -33,7 +33,8 @@ class SemanticChecker:
         if self.symbolTable.getSymbol(node.idv.name) is None:
             self.symbolTable.addSymbol(node.idv.name, GenericType(CoreTypes.INT))
         else:
-            self.errorList.append(node.get_line() + "variable named " + node.id.name + " already declared, can not be used in for")
+            self.errorList.append(
+                node.get_line() + "variable named " + node.id.name + " already declared, can not be used in for")
         self.visit(node.inside)
         self.loopDepth -= 1
         self.symbolTable.removeScope()
@@ -150,12 +151,14 @@ class SemanticChecker:
             if typeTmp is None:
                 return None
             else:
-                if typeM != -1 and not equal(typeM, typeTmp):
+                if typeM != -1 and not equivalent(typeM, typeTmp):
                     self.errorList.append(node.get_line() + "types difference in a matrix")
                     any_errors = True
                 if size != -1 and size != typeTmp.get_size():
                     self.errorList.append(node.get_line() + "row size difference in a matrix")
                     any_errors = True
+                if typeM != -1:
+                    typeTmp.core_type = min(typeM.core_type, typeTmp.core_type)
                 typeM = typeTmp
                 size = typeTmp.get_size()
         return None if any_errors else MatrixType(typeM.core_type, node.rows_amount, node.columns_amount)
@@ -168,9 +171,11 @@ class SemanticChecker:
             if typeTmp is None and isinstance(x, Variable):
                 self.errorList.append(node.get_line() + "variable " + x.name + " not declared")
                 any_errors = True
-            if typeM != -1 and not equal(typeM, typeTmp):
+            if typeM != -1 and not equivalent(typeM, typeTmp):
                 self.errorList.append(node.get_line() + "types difference")
                 any_errors = True
+            if typeM != -1:
+                typeTmp.core_type = min(typeM.core_type, typeTmp.core_type)
             typeM = typeTmp
         return None if any_errors else RowType(typeM.core_type, node.size)
 
