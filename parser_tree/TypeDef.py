@@ -15,6 +15,19 @@ class TypeDef:
 def get_type_binary(operator, el1, el2):
     if operator == "=":
         return el2
+    if operator == struct.Operator.MSTAR:
+        if not Types.is_matrix(el1) or not Types.is_matrix(el2):
+            return None
+        if Types.core_types_compatible(el1.core_type, el2.core_type):
+            if el1.core_type==Types.CoreTypes.STRING:
+                return None
+            else:
+                if el1.rows==el2.cols:
+                    return Types.MatrixType(max(el1.core_type, el2.core_type),el2.cols,el1.rows)
+                else:
+                    return None
+        else:
+            return None
     if not Types.equivalent(el1, el2):
         return None
     if (operator in {"+=", "-=", "*=", "/="} or operator <= 4) and Types.is_matrix(el1):
