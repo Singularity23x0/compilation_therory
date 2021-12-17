@@ -31,6 +31,8 @@ def get_type_binary(operator, el1, el2):
 
 
 def get_type_unary(operator, el):
+    if el is None:
+        return None
     if el.core_type == Types.CoreTypes.STRING:
         return None
     if operator == struct.Operator.TRANSPOSE and Types.is_matrix(el):
