@@ -22,8 +22,8 @@ def get_type_binary(operator, el1, el2):
             if el1.core_type==Types.CoreTypes.STRING:
                 return None
             else:
-                if el1.rows==el2.cols:
-                    return Types.MatrixType(max(el1.core_type, el2.core_type),el2.cols,el1.rows)
+                if el1.cols==el2.rows:
+                    return Types.MatrixType(max(el1.core_type, el2.core_type),el2.rows,el1.cols)
                 else:
                     return None
         else:
