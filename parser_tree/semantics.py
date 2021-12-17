@@ -34,7 +34,7 @@ class SemanticChecker:
             self.symbolTable.addSymbol(node.idv.name, GenericType(CoreTypes.INT))
         else:
             self.errorList.append(
-                node.get_line() + "variable named " + node.id.name + " already declared, can not be used in for")
+                node.get_line() + "variable named " + node.id.name + " has already been declared")
         self.visit(node.inside)
         self.loopDepth -= 1
         self.symbolTable.removeScope()
@@ -172,7 +172,7 @@ class SemanticChecker:
                 self.errorList.append(node.get_line() + "variable " + x.name + " not declared")
                 any_errors = True
             if typeM != -1 and not equivalent(typeM, typeTmp):
-                self.errorList.append(node.get_line() + "types difference")
+                self.errorList.append(node.get_line() + "types difference in a matrix's row")
                 any_errors = True
             if typeM != -1:
                 typeTmp.core_type = max(typeM.core_type, typeTmp.core_type)
@@ -226,7 +226,7 @@ class SemanticChecker:
         typeE1 = self.visit(node.left)
         typeE2 = self.visit(node.right)
         if not equivalent(typeE1, typeE2):
-            self.errorList.append(node.get_line() + "can not compare different type {0} and {1} with {2}"
+            self.errorList.append(node.get_line() + "can not compare types: {0} and {1} with the {2} operator"
                                   .format(typeE1, typeE2, node.operator))
 
     def visit_Assignment(self, node):
@@ -244,10 +244,10 @@ class SemanticChecker:
         if not equal(typeE1, typeAll):
             if equivalent(typeE1, typeAll):
                 if not(typeE1.core_type==CoreTypes.FLOAT and typeAll.core_type==CoreTypes.INT):
-                    self.errorList.append(node.get_line() + "can not assign with {2} to different type {0} and {1}"
+                    self.errorList.append(node.get_line() + "can not use {2} to assign {1} to {0}"
                                           .format(typeE1, typeE2, node.operator))
             else:
-                self.errorList.append(node.get_line() + "can not assign with {2} to different type {0} and {1}"
+                self.errorList.append(node.get_line() + "can not use {2} to assign {1} to {0}"
                                       .format(typeE1, typeE2, node.operator))
 
     def visit_Print(self, node):
@@ -263,11 +263,11 @@ class SemanticChecker:
 
     def visit_Break(self, node):
         if self.loopDepth == 0:
-            self.errorList.append(node.get_line() + "break outside loop")
+            self.errorList.append(node.get_line() + "break used outside of a loop")
 
     def visit_Cont(self, node):
         if self.loopDepth == 0:
-            self.errorList.append(node.get_line() + "continue outside loop")
+            self.errorList.append(node.get_line() + "continue used outside of a loop")
 
     def visit_Empty(self, node):
         pass
