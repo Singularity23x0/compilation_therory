@@ -1,15 +1,14 @@
-
 import AST
 from parser_tree import SymbolTable
 from Memory import *
-from Exceptions import  *
+from Exceptions import *
 from visit import *
 import sys
 
 sys.setrecursionlimit(10000)
 
-class Interpreter(object):
 
+class Interpreter(object):
 
     @on('node')
     def visit(self, node):
@@ -27,6 +26,7 @@ class Interpreter(object):
     @when(AST.Assignment)
     def visit(self, node):
         pass
+
     #
 
     # simplistic while loop interpretation
@@ -36,5 +36,3 @@ class Interpreter(object):
         while node.cond.accept(self):
             r = node.body.accept(self)
         return r
-
-
