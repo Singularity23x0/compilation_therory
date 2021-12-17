@@ -1,3 +1,5 @@
+import copy
+
 class Type:
     def __init__(self, core_type):
         self.core_type = core_type
@@ -19,6 +21,11 @@ class Type:
 
     def details(self):
         return CoreTypes.type_name(self.core_type)
+    
+    def copy_with_type(self, new_type):
+        cp = copy.deepcopy(self)
+        cp.core_type = new_type
+        return cp
 
 
 class GenericType(Type):
@@ -65,7 +72,7 @@ class CoreTypes:
     T = ["INT", "FLOAT", "STRING"]
 
     def type_name(i):
-        return CoreTypes.T[i]
+        return CoreTypes.T[i-1]
 
 
 def compare_sizes(size1, size2):

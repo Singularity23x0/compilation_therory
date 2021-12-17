@@ -33,7 +33,8 @@ class SemanticChecker:
         if self.symbolTable.getSymbol(node.idv.name) is None:
             self.symbolTable.addSymbol(node.idv.name, GenericType(CoreTypes.INT))
         else:
-            self.errorList.append(node.get_line() + "variable named " + node.id.name + " already declared, can not be used in for")
+            self.errorList.append(
+                node.get_line() + "variable named " + node.id.name + " already declared, can not be used in for")
         self.visit(node.inside)
         self.loopDepth -= 1
         self.symbolTable.removeScope()
@@ -150,12 +151,14 @@ class SemanticChecker:
             if typeTmp is None:
                 return None
             else:
-                if typeM != -1 and not equal(typeM, typeTmp):
+                if typeM != -1 and not equivalent(typeM, typeTmp):
                     self.errorList.append(node.get_line() + "types difference in a matrix")
                     any_errors = True
                 if size != -1 and size != typeTmp.get_size():
                     self.errorList.append(node.get_line() + "row size difference in a matrix")
                     any_errors = True
+                if typeM != -1:
+                    typeTmp.core_type = max(typeM.core_type, typeTmp.core_type)
                 typeM = typeTmp
                 size = typeTmp.get_size()
         return None if any_errors else MatrixType(typeM.core_type, node.rows_amount, node.columns_amount)
@@ -168,9 +171,11 @@ class SemanticChecker:
             if typeTmp is None and isinstance(x, Variable):
                 self.errorList.append(node.get_line() + "variable " + x.name + " not declared")
                 any_errors = True
-            if typeM != -1 and not equal(typeM, typeTmp):
+            if typeM != -1 and not equivalent(typeM, typeTmp):
                 self.errorList.append(node.get_line() + "types difference")
                 any_errors = True
+            if typeM != -1:
+                typeTmp.core_type = max(typeM.core_type, typeTmp.core_type)
             typeM = typeTmp
         return None if any_errors else RowType(typeM.core_type, node.size)
 
@@ -208,6 +213,8 @@ class SemanticChecker:
             self.errorList.append(node.get_line() + "variable " + node.left.name + " not declared")
         if typeE2 is None and isinstance(node.right, Variable):
             self.errorList.append(node.get_line() + "variable " + node.right.name + " not declared")
+        if typeE1 is None or typeE2 is None:
+            return None
         typeAll = TypeDef.get_type(node.operator, typeE1, typeE2)
         if typeAll == None:
             self.errorList.append(node.get_line() + "incorrect type {0} and {1} for operator {2}"
@@ -235,8 +242,13 @@ class SemanticChecker:
             typeE1 = typeAll
             self.symbolTable.addSymbol(node.left.name, typeE2)
         if not equal(typeE1, typeAll):
-            self.errorList.append(node.get_line() + "can not assign with {2} to different type {0} and {1}"
-                                  .format(typeE1, typeE2, node.operator))
+            if equivalent(typeE1, typeAll):
+                if not(typeE1.core_type==CoreTypes.FLOAT and typeAll.core_type==CoreTypes.INT):
+                    self.errorList.append(node.get_line() + "can not assign with {2} to different type {0} and {1}"
+                                          .format(typeE1, typeE2, node.operator))
+            else:
+                self.errorList.append(node.get_line() + "can not assign with {2} to different type {0} and {1}"
+                                      .format(typeE1, typeE2, node.operator))
 
     def visit_Print(self, node):
         for x in node.vector:

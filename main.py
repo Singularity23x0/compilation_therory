@@ -20,12 +20,13 @@ if __name__ == '__main__':
 
     PARSER.parse(text, lexer=lexer)
     tree_structure = get_structure()
-    TreePrinter("resART.txt").draw(tree_structure)
-    S=SemanticChecker()
-    try:
-        S.visit(tree_structure)
-    except Exception as err:
-        print(err,traceback.format_exc())
-    for err in S.errorList:
-        print(err)
+    if tree_structure is not None:
+        TreePrinter("resART.txt").draw(tree_structure)
+        S=SemanticChecker()
+        try:
+            S.visit(tree_structure)
+        except Exception as err:
+            print(err,traceback.format_exc())
+        for err in S.errorList:
+            print(err)
 

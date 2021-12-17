@@ -3,9 +3,11 @@ from parser_tree.structure import *
 from lexer import *
 
 tree_structure = None
-
+err=False
 
 def get_structure():
+    if err:
+        return None
     return tree_structure
 
 
@@ -336,6 +338,8 @@ def p_return2(p):
 
 
 def p_error(p):
+    gloabl err
+    err=True
     if p:
         print("Syntax error at line {}: LexToken('{}')".format(p.lineno, p.value))
     else:
