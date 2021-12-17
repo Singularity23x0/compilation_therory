@@ -39,8 +39,7 @@ def get_type_binary(operator, el1, el2):
     if (el1.core_type==Types.CoreTypes.STRING or el2.core_type==Types.CoreTypes.STRING )\
             and (not (operator == "=" or operator == "+=" or operator == 1) or el1.core_type!=el2.core_type):
         return None
-    el1.core_type = max(el1.core_type, el2.core_type)
-    return el1
+    return el1.copy_with_type(max(el1.core_type, el2.core_type))
 
 
 def get_type_unary(operator, el):
