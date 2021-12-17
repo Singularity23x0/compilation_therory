@@ -7,7 +7,7 @@ class Node:
         return self
 
     def get_line(self):
-        return "Unknown line: " if self.line is None else "At line {}: ".format(self.line)
+        return "Unknown line: " if self.line == 0 else "At line {}: ".format(self.line)
 
 
 class Segment(Node):
