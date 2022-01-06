@@ -125,8 +125,14 @@ class Interpreter:
 
     @when(struc.Print)
     def visit(self, node):
+        i = len(node.vector)
+        k = 0
         for val in node.vector:
-            print(self.visit(val), end=" ")
+            k += 1
+            if i == k:
+                print(self.visit(val), end="")
+            else:
+                print(self.visit(val), end=" ")
 
     @when(struc.Return)
     def visit(self, node):

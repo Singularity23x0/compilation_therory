@@ -39,7 +39,7 @@ t_ignore = ' \t'
 
 def t_STRING(t):
     r'"(\\"|[^"])*"'
-    t.value = t.value[1:-1]
+    t.value = t.value[1:-1].replace("\\n","\n")
     return t
 
 

@@ -1,4 +1,8 @@
 a = 10;
+print 1,2,3;
+print "\n";
+print 123;
+print "\n";
 if (2==2)
     if(3==3)
         a=6;
