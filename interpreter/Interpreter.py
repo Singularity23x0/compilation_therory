@@ -90,20 +90,16 @@ class Interpreter:
         return self.memory.get(node.name)
 
     @when(struc.SelectionSingle)
-    def visit(self, node, pointer=False):
+    def visit(self, node):
         m = self.visit(node.matrix)
         p1 = self.visit(node.pos1)
         p2 = self.visit(node.pos2)
-        if pointer:
-            return m.rows_list[p1].values_list[p2]
-        return m.rows_list[p1].values_list[p2].value
+        return m.rows_list[p1].values_list[p2]
 
     @when(struc.SelectRow)
-    def visit(self, node, pointer=False):
+    def visit(self, node):
         m = self.visit(node.matrix)
         p = self.visit(node.pos)
-        if pointer:
-            return m, p
         return m.rows_list[p]
 
     @when(struc.Matrix)
@@ -112,8 +108,8 @@ class Interpreter:
             node.rows_list[i] = self.visit(node.rows_list[i])
         typ = node.rows_list[0].typ
         if typ == int:
-            for i in range(1, node.size):
-                if node.values_list[0].typ == float:
+            for i in range(1, node.rows_amount):
+                if node.rows_list[0].typ == float:
                     typ = float
         node.typ = typ
         return node
@@ -139,18 +135,18 @@ class Interpreter:
         argument = self.visit(node.arguments)
 
         def make_zero(arg):
-            return struc.Matrix([struc.Row(struc.Vector([struc.Value(0) for y in range(arg)]), int)
+            return struc.Matrix([struc.Row(struc.Vector([0 for y in range(arg)]), int)
                                  for x in range(arg)], int)
 
         def make_onse(arg):
-            return struc.Matrix([struc.Row(struc.Vector([struc.Value(1) for y in range(arg)]), int)
+            return struc.Matrix([struc.Row(struc.Vector([1 for y in range(arg)]), int)
                                  for x in range(arg)], int)
 
         def make_eye(arg):
-            m = struc.Matrix([struc.Row(struc.Vector([struc.Value(0) for y in range(arg)]), int)
+            m = struc.Matrix([struc.Row(struc.Vector([0 for y in range(arg)]), int)
                               for x in range(arg)], int)
             for i in range(arg):
-                m.rows_list[i].values_list[i].value = 1
+                m.rows_list[i].values_list[i] = 1
             return m
 
         T = {"eye": make_zero, "ones": make_onse, "zeros": make_eye}
@@ -160,9 +156,12 @@ class Interpreter:
     def visit(self, node):
         pass
 
-    @when(struc.ArithmeticExpressionUnary)  # TODO finish
+    @when(struc.ArithmeticExpressionUnary)
     def visit(self, node):
-        pass
+        if node.operator == struc.Operator.TRANSPOSE:
+            return self.visit(node.element).transpose()
+        else:
+            return -self.visit(node.element)
 
     class Comparator:
         def le(el1, el2):

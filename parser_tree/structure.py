@@ -1,3 +1,6 @@
+import copy
+
+
 class Node:
     def __init__(self):
         self.line = None
@@ -182,6 +185,26 @@ class Matrix(Node):
                 return False
         return True
 
+    def __neg__(self):
+        m = copy.deepcopy(self)
+        for el in range(self.rows_amount):
+            m.rows_list[el] = -m.rows_list[el]
+        return m
+
+    def transpose(self):
+        m = Matrix([Row(Vector([(0) for y in range(self.rows_amount)]), self.type)
+                    for x in range(self.columns_amount)], self.type)
+        for i in range(self.columns_amount):
+            for j in range(self.rows_amount):
+                m.rows_list[i].values_list[j] = self.rows_list[j].values_list[i]
+        return m
+
+    def __str__(self):
+        s = "["
+        for row in self.rows_list:
+            s += str(row) + ','
+        return s[:-1] + "]"
+
 
 class Row(Node):
     def __init__(self, values_list, typ=None):
@@ -234,12 +257,27 @@ class Row(Node):
                 return False
         return True
 
+    def __neg__(self):
+        r = copy.deepcopy(self)
+        for el in range(self.size):
+            r.values_list[el] = -r.values_list[el]
+        return r
+
+    def __str__(self):
+        s = "["
+        for val in self.values_list:
+            s += str(val) + ','
+        return s[:-1] + "]"
+
 
 class Vector(Node):
     def __init__(self, value=None, vec=None):
         self.value = list()
         if value is not None:
-            self.value.append(value)
+            if isinstance(value, list):
+                self.value += value
+            else:
+                self.value.append(value)
 
         if vec is not None:
             self.value += vec.value
@@ -249,6 +287,12 @@ class Vector(Node):
 
     def __getitem__(self, item):
         return self.value[item]
+
+    def __setitem__(self, item, value):
+        self.value[item] = value
+
+    def __iter__(self):
+        return self.value.__iter__()
 
 
 class Function(Node):
