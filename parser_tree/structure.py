@@ -22,9 +22,9 @@ class Segment(Node):
 
 
 class Block(Node):
-    def __init__(self, segment,prime=False):
+    def __init__(self, segment, prime=False):
         self.segment = segment
-        self.prime=prime
+        self.prime = prime
         # other
 
 
@@ -101,6 +101,24 @@ class Value(Node):  # is_matrix : 0 -> false, 1 -> true, -1 -> unknown
         self.const = const
         self.value = value
 
+    def __le__(self, other):
+        return self.value <= other.value
+
+    def __ge__(self, other):
+        return self.value >= other.value
+
+    def __eq__(self, other):
+        return self.value == other.value
+
+    def __ne__(self, other):
+        return self.value != other.value
+
+    def __lt__(self, other):
+        return self.value < other.value
+
+    def __gt__(self, other):
+        return self.value > other.value
+
 
 class Variable(Node):
     def __init__(self, name, variable_type=Types.UNDEFINED):
@@ -118,23 +136,58 @@ class SelectionSingle(Node):
 class SelectRow(Node):
     def __init__(self, matrix, pos):
         self.matrix = matrix
-
         self.pos = pos
 
 
 class Matrix(Node):
-    def __init__(self, rows_list,typ=None):
+    def __init__(self, rows_list, typ=None):
         self.rows_list = rows_list
         self.type = typ
         self.rows_amount = len(rows_list)
         self.columns_amount = rows_list[0].size
 
+    def __le__(self, other):
+        for row1, row2 in zip(self.rows_list, other.rows_list):
+            if not row1 <= row2:
+                return False
+        return True
+
+    def __ge__(self, other):
+        for row1, row2 in zip(self.rows_list, other.rows_list):
+            if not row1 >= row2:
+                return False
+        return True
+
+    def __eq__(self, other):
+        for row1, row2 in zip(self.rows_list, other.rows_list):
+            if not row1 == row2:
+                return False
+        return True
+
+    def __ne__(self, other):
+        for row1, row2 in zip(self.rows_list, other.rows_list):
+            if not row1 != row2:
+                return False
+        return True
+
+    def __lt__(self, other):
+        for row1, row2 in zip(self.rows_list, other.rows_list):
+            if not row1 < row2:
+                return False
+        return True
+
+    def __gt__(self, other):
+        for row1, row2 in zip(self.rows_list, other.rows_list):
+            if not row1 > row2:
+                return False
+        return True
+
 
 class Row(Node):
-    def __init__(self, values_list):
+    def __init__(self, values_list, typ=None):
         self.values_list = values_list
-
         self.size = len(values_list)
+        self.typ = typ
 
     def getSize(self):
         return self.size
@@ -144,6 +197,42 @@ class Row(Node):
 
     def getSecond(self):
         return self.values_list[1]
+
+    def __le__(self, other):
+        for val1, val2 in zip(self.values_list, other.values_list):
+            if not val1 <= val2:
+                return False
+        return True
+
+    def __ge__(self, other):
+        for val1, val2 in zip(self.values_list, other.values_list):
+            if not val1 >= val2:
+                return False
+        return True
+
+    def __eq__(self, other):
+        for val1, val2 in zip(self.values_list, other.values_list):
+            if not val1 == val2:
+                return False
+        return True
+
+    def __ne__(self, other):
+        for val1, val2 in zip(self.values_list, other.values_list):
+            if not val1 != val2:
+                return False
+        return True
+
+    def __lt__(self, other):
+        for val1, val2 in zip(self.values_list, other.values_list):
+            if not val1 < val2:
+                return False
+        return True
+
+    def __gt__(self, other):
+        for val1, val2 in zip(self.values_list, other.values_list):
+            if not val1 > val2:
+                return False
+        return True
 
 
 class Vector(Node):

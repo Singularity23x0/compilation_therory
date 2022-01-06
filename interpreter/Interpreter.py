@@ -81,33 +81,82 @@ class Interpreter:
 
     @when(struc.Value)
     def visit(self, node):
-        return node.value
+        if isinstance(node.value,(int,float,str)):
+            return node.value
+        return self.visit(node.value)
 
     @when(struc.Variable)
     def visit(self, node):
         return self.memory.get(node.name)
 
-    @when(struc.SelectionSingle)  # TODO finish
-    def visit(self, node):
-        pass
+    @when(struc.SelectionSingle)
+    def visit(self, node, pointer=False):
+        m = self.visit(node.matrix)
+        p1 = self.visit(node.pos1)
+        p2 = self.visit(node.pos2)
+        if pointer:
+            return m.rows_list[p1].values_list[p2]
+        return m.rows_list[p1].values_list[p2].value
 
-    @when(struc.SelectRow)  # TODO finish
-    def visit(self, node):
-        pass
+    @when(struc.SelectRow)
+    def visit(self, node, pointer=False):
+        m = self.visit(node.matrix)
+        p = self.visit(node.pos)
+        if pointer:
+            return m, p
+        return m.rows_list[p]
 
-    @when(struc.Matrix)  # TODO finish
+    @when(struc.Matrix)
     def visit(self, node):
-        pass
+        for i in range(node.rows_amount):
+            node.rows_list[i] = self.visit(node.rows_list[i])
+        typ = node.rows_list[0].typ
+        if typ == int:
+            for i in range(1, node.size):
+                if node.values_list[0].typ == float:
+                    typ = float
+        node.typ = typ
+        return node
 
-    @when(struc.Row)  # TODO finish
+    @when(struc.Row)
     def visit(self, node):
-        pass
+        for i in range(node.size):
+            node.values_list[i] = self.visit(node.values_list[i])
+        typ = type(node.values_list[0])
+        if typ == int:
+            for i in range(1, node.size):
+                if isinstance(node.values_list[0], float):
+                    typ = float
+        node.typ = typ
+        return node
 
-    @when(struc.Vector)  # TODO finish
+    @when(struc.Vector)
     def visit(self, node):
-        pass
+        print("debugging alert")
 
-    @when(struc.Function)  # TODO finish
+    @when(struc.Function)
+    def visit(self, node):
+        argument = self.visit(node.arguments)
+
+        def make_zero(arg):
+            return struc.Matrix([struc.Row(struc.Vector([struc.Value(0) for y in range(arg)]), int)
+                                 for x in range(arg)], int)
+
+        def make_onse(arg):
+            return struc.Matrix([struc.Row(struc.Vector([struc.Value(1) for y in range(arg)]), int)
+                                 for x in range(arg)], int)
+
+        def make_eye(arg):
+            m = struc.Matrix([struc.Row(struc.Vector([struc.Value(0) for y in range(arg)]), int)
+                              for x in range(arg)], int)
+            for i in range(arg):
+                m.rows_list[i].values_list[i].value = 1
+            return m
+
+        T = {"eye": make_zero, "ones": make_onse, "zeros": make_eye}
+        return T[node.name](argument)
+
+    @when(struc.ArithmeticExpressionBinary)  # TODO finish
     def visit(self, node):
         pass
 
@@ -115,9 +164,35 @@ class Interpreter:
     def visit(self, node):
         pass
 
-    @when(struc.LogicalExpression)  # TODO finish
+    class Comparator:
+        def le(el1, el2):
+            return el1<=el2
+
+        def ge(el1, el2):
+            return el1>=el2
+
+        def eq(el1, el2):
+            return el1==el2
+
+        def ne(el1, el2):
+            return el1!=el2
+
+        def lt(el1, el2):
+            return el1<el2
+
+        def gt(el1, el2):
+            return el1>el2
+
+        Operators = {"<=": le, ">=": ge, "==": eq, "!=": ne,"<": lt, ">": gt}
+
+        def compare(el1, el2, operator):
+            return Interpreter.Comparator.Operators[operator](el1, el2)
+
+    @when(struc.LogicalExpression)
     def visit(self, node):
-        pass
+        left = self.visit(node.left)
+        right = self.visit(node.right)
+        return Interpreter.Comparator.compare(left,right,node.operator)
 
     @when(struc.Assignment)  # TODO finish
     def visit(self, node):

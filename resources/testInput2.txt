@@ -5,11 +5,18 @@ print 123;
 print "\n";
 if (2==2)
     if(3==3)
-        a=6;
+        #a=6;
+        print ":}\n";
     else
-    a=7;
+    #a=7;
+    print ":{\n";
 else
     a=8;
+
+if (eye(5)==eye(5))
+    print "work\n";
+else
+    print "what?\n";
 
 b = [
     [2, 3, 4],
