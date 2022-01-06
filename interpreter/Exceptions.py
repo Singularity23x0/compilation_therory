@@ -9,3 +9,8 @@ class BreakException(Exception):
 
 class ContinueException(Exception):
     pass
+
+
+class ReturnException(Exception):
+    def __init__(self, val):
+        self.val = val

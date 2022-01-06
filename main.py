@@ -1,7 +1,8 @@
 import sys
 import traceback
 from lexer import lexer
-from parser_tree import PARSER,get_structure,TreePrinter,SemanticChecker
+from parser_tree import PARSER, get_structure, TreePrinter, SemanticChecker
+from interpreter.Interpreter import Interpreter
 
 if __name__ == '__main__':
 
@@ -22,11 +23,13 @@ if __name__ == '__main__':
     tree_structure = get_structure()
     if tree_structure is not None:
         TreePrinter("resART.txt").draw(tree_structure)
-        S=SemanticChecker()
+        S = SemanticChecker()
         try:
             S.visit(tree_structure)
         except Exception as err:
-            print(err,traceback.format_exc())
+            print(err, traceback.format_exc())
         for err in S.errorList:
             print(err)
-
+        if len(S.errorList) == 0:
+            inter = Interpreter()
+            inter.visit(tree_structure)

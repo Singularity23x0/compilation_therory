@@ -24,7 +24,7 @@ precedence = (
 
 def p_program1(p):
     """program : segment"""
-    p[0] = Block(p[1]).set_line(p.lineno(1))
+    p[0] = Block(p[1],True).set_line(p.lineno(1))
     global tree_structure
     tree_structure = p[0]
 

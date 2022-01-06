@@ -22,8 +22,9 @@ class Segment(Node):
 
 
 class Block(Node):
-    def __init__(self, segment):
+    def __init__(self, segment,prime=False):
         self.segment = segment
+        self.prime=prime
         # other
 
 
@@ -85,7 +86,7 @@ def types_strong_equivalent(type1, type2):
     return type1 == type2
 
 
-def get_type(val):  # TODO make
+def get_type(val):
     if isinstance(val, int):
         return Types.INT
     if isinstance(val, float):
@@ -122,9 +123,9 @@ class SelectRow(Node):
 
 
 class Matrix(Node):
-    def __init__(self, rows_list):
+    def __init__(self, rows_list,typ=None):
         self.rows_list = rows_list
-
+        self.type = typ
         self.rows_amount = len(rows_list)
         self.columns_amount = rows_list[0].size
 

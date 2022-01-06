@@ -16,36 +16,44 @@ class Memory:
     # gets from memory current value of variable <name>
 
     def put(self, name, value):
-        return self.data.put(name, value)
+        self.data[name] = value
     # puts into memory current value of variable <name>
 
 
 class MemoryStack:
     def __init__(self, memory=None):
-        self.memory = Memory("variables") if memory is None else memory
+        self.memory = []
+        if memory is not None:
+            self.memory.append(memory)
 
     # initialize memory stack with memory <memory>
 
     def get(self, name):
-        return self.memory.get(name)
+        for mem in reversed(self.memory):
+            if mem.has_key(name):
+                return mem.get(name)
+        #  no error check already done is semanticChecker
 
     # gets from memory stack current value of variable <name>
 
     def insert(self, name, value):
-        pass
+        self.memory[-1].put(name, value)
 
     # inserts into memory stack variable <name> with value <value>
 
     def set(self, name, value):
-        pass
+        for mem in reversed(self.memory):
+            if mem.has_key(name):
+                return mem.put(name, value)
+        #  no error check already done is semanticChecker
 
     # sets variable <name> to value <value>
 
     def push(self, memory):
-        pass
+        self.memory.append(memory)
 
     # pushes memory <memory> onto the stack
 
     def pop(self):
-        pass
+        self.memory.pop()
     # pops the top memory from the stack
