@@ -143,11 +143,26 @@ class SelectRow(Node):
 
 
 class Matrix(Node):
+    Typ = {(str, str): str, (int, int): int, (int, float): float, (float, int): float}
+
     def __init__(self, rows_list, typ=None):
         self.rows_list = rows_list
         self.type = typ
         self.rows_amount = len(rows_list)
         self.columns_amount = rows_list[0].size
+
+    def makeEmpty(rows, columns, value=0, typ=int):
+        m = Matrix([Row([])])
+        m.rows_amount = rows
+        m.columns_amount = columns
+        m.rows_list = []
+        m.type = typ
+        for x in range(rows):
+            m.rows_list.append(Row.makeEmpty(columns, value, typ))
+        return m
+
+    def getTypeArthmetci(t1,t2):
+        return Matrix.Typ[(t1,t2)]
 
     def __le__(self, other):
         for row1, row2 in zip(self.rows_list, other.rows_list):
@@ -191,9 +206,84 @@ class Matrix(Node):
             m.rows_list[el] = -m.rows_list[el]
         return m
 
+    def __add__(self, other):
+        m = copy.deepcopy(self)
+        for x in range(other.rows_amount):
+            m.rows_list[x] += other.rows_list[x]
+        m.type=Matrix.getTypeArthmetci(self.type,other.type)
+        return m
+
+    def __iadd__(self, other):
+        for x in other.rows_amount:
+            self.rows_list[x] += other.rows_list[x]
+        self.type = Matrix.getTypeArthmetci(self.type, other.type)
+        return self
+
+    def __sub__(self, other):
+        m = copy.deepcopy(self)
+        for x in range(other.rows_amount):
+            m.rows_list[x] -= other.rows_list[x]
+        m.type = Matrix.getTypeArthmetci(self.type, other.type)
+        return m
+
+    def __isub__(self, other):
+        for x in other.rows_amount:
+            self.rows_list[x] -= other.rows_list[x]
+        self.type = Matrix.getTypeArthmetci(self.type, other.type)
+        return self
+
+    def mmul(self, other):
+        m = copy.deepcopy(self)
+        for x in range(other.rows_amount):
+            Row.immul(m.rows_list[x], other.rows_list[x])
+        m.type = Matrix.getTypeArthmetci(self.type, other.type)
+        return m
+
+    def immul(self, other):
+        for x in other.rows_amount:
+            Row.immul(self.rows_list[x], other.rows_list[x])
+        self.type = Matrix.getTypeArthmetci(self.type, other.type)
+        return self
+
+    def mdiv(self, other):
+        m = copy.deepcopy(self)
+        for x in range(other.rows_amount):
+            Row.imdiv(m.rows_list[x], other.rows_list[x])
+        m.type = float
+        return m
+
+    def imdiv(self, other):
+        for x in other.rows_amount:
+            Row.imdiv(self.rows_list[x], other.rows_list[x])
+        self.type = float
+        return self
+
+    def __mul__(self, other):
+        m = Matrix.makeEmpty(self.rows_amount, other.columns_amount)
+        for i in range(self.rows_amount):
+            for j in range(other.columns_amount):
+                for p in range(self.columns_amount):
+                    m.rows_list[i].values_list[j] += \
+                        self.rows_list[i].values_list[p] * other.rows_list[p].values_list[j]
+        m.type = Matrix.getTypeArthmetci(self.type, other.type)
+        return m
+
+    def __imul__(self, other):
+        m = Matrix.makeEmpty(self.rows_amount, other.columns_amount)
+        for i in range(self.rows_amount):
+            for j in range(other.columns_amount):
+                for p in range(self.columns_amount):
+                    m.rows_list[i].values_list[j] += \
+                        self.rows_list[i].values_list[p] * other.rows_list[p].values_list[j]
+        self.rows_list = m.rows_list
+        self.type = Matrix.getTypeArthmetci(self.type, other.type)
+        self.rows_amount = m.rows_amount
+        self.columns_amount = m.columns_amount
+        return self
+        # return m
+
     def transpose(self):
-        m = Matrix([Row(Vector([(0) for y in range(self.rows_amount)]), self.type)
-                    for x in range(self.columns_amount)], self.type)
+        m = Matrix.makeEmpty(self.columns_amount, self.rows_amount)
         for i in range(self.columns_amount):
             for j in range(self.rows_amount):
                 m.rows_list[i].values_list[j] = self.rows_list[j].values_list[i]
@@ -207,6 +297,7 @@ class Matrix(Node):
 
 
 class Row(Node):
+    Typ = {(str, str): str, (int, int): int, (int, float): float, (float, int): float}
     def __init__(self, values_list, typ=None):
         self.values_list = values_list
         self.size = len(values_list)
@@ -220,6 +311,12 @@ class Row(Node):
 
     def getSecond(self):
         return self.values_list[1]
+
+    def makeEmpty(columns, value=0, typ=int):
+        return Row(Vector([value for x in range(columns)]), typ)
+
+    def getTypeArthmetci(t1,t2):
+        return Row.Typ[(t1,t2)]
 
     def __le__(self, other):
         for val1, val2 in zip(self.values_list, other.values_list):
@@ -262,6 +359,58 @@ class Row(Node):
         for el in range(self.size):
             r.values_list[el] = -r.values_list[el]
         return r
+
+    def __add__(self, other):
+        r = copy.deepcopy(self)
+        for x in range(other.size):
+            r.values_list[x] += other.values_list[x]
+        r.typ = Row.getTypeArthmetci(self.typ,other.typ)
+        return r
+
+    def __iadd__(self, other):
+        for x in range(other.size):
+            self.values_list[x] += other.values_list[x]
+        self.typ = Row.getTypeArthmetci(self.typ, other.typ)
+        return self
+
+    def __sub__(self, other):
+        r = copy.deepcopy(self)
+        for x in range(other.size):
+            r.values_list[x] -= other.values_list[x]
+        r.typ = Row.getTypeArthmetci(self.typ, other.typ)
+        return r
+
+    def __isub__(self, other):
+        for x in range(other.size):
+            self.values_list[x] -= other.values_list[x]
+        self.typ = Row.getTypeArthmetci(self.typ, other.typ)
+        return self
+
+    def mmul(self, other):
+        r = copy.deepcopy(self)
+        for x in range(other.size):
+            r.values_list[x] *= other.values_list[x]
+        r.typ = Row.getTypeArthmetci(self.typ, other.typ)
+        return r
+
+    def immul(self, other):
+        for x in range(other.size):
+            self.values_list[x] *= other.values_list[x]
+        self.typ = Row.getTypeArthmetci(self.typ, other.typ)
+        return self
+
+    def mdiv(self, other):
+        r = copy.deepcopy(self)
+        for x in range(other.size):
+            r.values_list[x] /= other.values_list[x]
+        r.typ = float
+        return r
+
+    def imdiv(self, other):
+        for x in range(other.size):
+            self.values_list[x] /= other.values_list[x]
+        self.typ = float
+        return self
 
     def __str__(self):
         s = "["

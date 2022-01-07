@@ -81,7 +81,7 @@ class Interpreter:
 
     @when(struc.Value)
     def visit(self, node):
-        if isinstance(node.value,(int,float,str)):
+        if isinstance(node.value, (int, float, str)):
             return node.value
         return self.visit(node.value)
 
@@ -89,7 +89,7 @@ class Interpreter:
     def visit(self, node):
         return self.memory.get(node.name)
 
-    @when(struc.SelectionSingle)
+    @when(struc.SelectionSingle)  # TODO add index in range, in function argument too
     def visit(self, node):
         m = self.visit(node.matrix)
         p1 = self.visit(node.pos1)
@@ -111,7 +111,7 @@ class Interpreter:
             for i in range(1, node.rows_amount):
                 if node.rows_list[0].typ == float:
                     typ = float
-        node.typ = typ
+        node.type = typ
         return node
 
     @when(struc.Row)
@@ -135,16 +135,13 @@ class Interpreter:
         argument = self.visit(node.arguments)
 
         def make_zero(arg):
-            return struc.Matrix([struc.Row(struc.Vector([0 for y in range(arg)]), int)
-                                 for x in range(arg)], int)
+            return struc.Matrix.makeEmpty(arg, arg)
 
         def make_onse(arg):
-            return struc.Matrix([struc.Row(struc.Vector([1 for y in range(arg)]), int)
-                                 for x in range(arg)], int)
+            return struc.Matrix.makeEmpty(arg, arg, 1)
 
         def make_eye(arg):
-            m = struc.Matrix([struc.Row(struc.Vector([0 for y in range(arg)]), int)
-                              for x in range(arg)], int)
+            m = struc.Matrix.makeEmpty(arg, arg)
             for i in range(arg):
                 m.rows_list[i].values_list[i] = 1
             return m
@@ -152,9 +149,35 @@ class Interpreter:
         T = {"eye": make_zero, "ones": make_onse, "zeros": make_eye}
         return T[node.name](argument)
 
-    @when(struc.ArithmeticExpressionBinary)  # TODO finish
+    class Arithmetic:
+        def add(el1, el2):
+            return el1 + el2
+
+        def sub(el1, el2):
+            return el1 - el2
+
+        def mul(el1, el2):
+            return el1 * el2
+
+        def div(el1, el2):
+            return el1 / el2  # TODO add div 0 error
+
+        def mmul(el1, el2):
+            return struc.Matrix.mmul(el1, el2)
+
+        def mdiv(el1, el2):
+            return struc.Matrix.mdiv(el1, el2)  # TODO add div 0 error
+
+        Operators = [0, add, sub, mul, div, add, sub, mmul, mdiv]
+
+        def calculate(el1, el2, operator):
+            return Interpreter.Arithmetic.Operators[operator](el1, el2)
+
+    @when(struc.ArithmeticExpressionBinary)
     def visit(self, node):
-        pass
+        left = self.visit(node.left)
+        right = self.visit(node.right)
+        return Interpreter.Arithmetic.calculate(left, right, node.operator)
 
     @when(struc.ArithmeticExpressionUnary)
     def visit(self, node):
@@ -165,24 +188,24 @@ class Interpreter:
 
     class Comparator:
         def le(el1, el2):
-            return el1<=el2
+            return el1 <= el2
 
         def ge(el1, el2):
-            return el1>=el2
+            return el1 >= el2
 
         def eq(el1, el2):
-            return el1==el2
+            return el1 == el2
 
         def ne(el1, el2):
-            return el1!=el2
+            return el1 != el2
 
         def lt(el1, el2):
-            return el1<el2
+            return el1 < el2
 
         def gt(el1, el2):
-            return el1>el2
+            return el1 > el2
 
-        Operators = {"<=": le, ">=": ge, "==": eq, "!=": ne,"<": lt, ">": gt}
+        Operators = {"<=": le, ">=": ge, "==": eq, "!=": ne, "<": lt, ">": gt}
 
         def compare(el1, el2, operator):
             return Interpreter.Comparator.Operators[operator](el1, el2)
@@ -191,7 +214,7 @@ class Interpreter:
     def visit(self, node):
         left = self.visit(node.left)
         right = self.visit(node.right)
-        return Interpreter.Comparator.compare(left,right,node.operator)
+        return Interpreter.Comparator.compare(left, right, node.operator)
 
     @when(struc.Assignment)  # TODO finish
     def visit(self, node):
