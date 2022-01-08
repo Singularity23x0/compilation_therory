@@ -89,17 +89,25 @@ class Interpreter:
     def visit(self, node):
         return self.memory.get(node.name)
 
-    @when(struc.SelectionSingle)  # TODO add index in range, in function argument too
-    def visit(self, node):
+    def evalSelectSingle(self, node):  # TODO add index in range, in function argument too
         m = self.visit(node.matrix)
         p1 = self.visit(node.pos1)
         p2 = self.visit(node.pos2)
+        return m, p1, p2
+
+    @when(struc.SelectionSingle)
+    def visit(self, node):
+        m, p1, p2 = Interpreter.evalSelectSingle(self, node)
         return m.rows_list[p1].values_list[p2]
+
+    def evalSelectRow(self, node):  # TODO add index in range, in function argument too
+        m = self.visit(node.matrix)
+        p = self.visit(node.pos)
+        return m, p
 
     @when(struc.SelectRow)
     def visit(self, node):
-        m = self.visit(node.matrix)
-        p = self.visit(node.pos)
+        m, p = Interpreter.evalSelectRow(self, node)
         return m.rows_list[p]
 
     @when(struc.Matrix)
@@ -109,7 +117,7 @@ class Interpreter:
         typ = node.rows_list[0].typ
         if typ == int:
             for i in range(1, node.rows_amount):
-                if node.rows_list[0].typ == float:
+                if node.rows_list[i].typ == float:
                     typ = float
         node.type = typ
         return node
@@ -121,7 +129,7 @@ class Interpreter:
         typ = type(node.values_list[0])
         if typ == int:
             for i in range(1, node.size):
-                if isinstance(node.values_list[0], float):
+                if isinstance(node.values_list[i], float):
                     typ = float
         node.typ = typ
         return node
@@ -130,7 +138,7 @@ class Interpreter:
     def visit(self, node):
         print("debugging alert")
 
-    @when(struc.Function)
+    @when(struc.Function)  # TODO argument check
     def visit(self, node):
         argument = self.visit(node.arguments)
 
@@ -149,7 +157,7 @@ class Interpreter:
         T = {"eye": make_zero, "ones": make_onse, "zeros": make_eye}
         return T[node.name](argument)
 
-    class Arithmetic:
+    class Arithmetic:  # TODO add check for matrix size
         def add(el1, el2):
             return el1 + el2
 
@@ -186,7 +194,7 @@ class Interpreter:
         else:
             return -self.visit(node.element)
 
-    class Comparator:
+    class Comparator:  # TODO add check for matrix size
         def le(el1, el2):
             return el1 <= el2
 
@@ -216,9 +224,81 @@ class Interpreter:
         right = self.visit(node.right)
         return Interpreter.Comparator.compare(left, right, node.operator)
 
-    @when(struc.Assignment)  # TODO finish
+    class Assignmenter:
+        def makeVariable(interpreter, el1, el2):
+            interpreter.memory.insert(el1.name, el2)
+
+        def assigm(interpreter, el1, el2):
+            interpreter.memory.insert(el1.name, el2)
+
+        def adda(interpreter, el1, el2):
+            interpreter.memory.insert(el1.name, interpreter.visit(el1) + el2)
+
+        def suba(interpreter, el1, el2):
+            interpreter.memory.insert(el1.name, interpreter.visit(el1) - el2)
+
+        def mula(interpreter, el1, el2):
+            interpreter.memory.insert(el1.name, interpreter.visit(el1) * el2)
+
+        def diva(interpreter, el1, el2):
+            interpreter.memory.insert(el1.name, interpreter.visit(el1) / el2)
+
+        def assigmS(interpreter, el1, el2):
+            m, p1, p2 = interpreter.evalSelectSingle(el1)
+            m.setSingle(p1, p2, el2)
+
+        def addaS(interpreter, el1, el2):
+            m, p1, p2 = interpreter.evalSelectSingle(el1)
+            m.setSingle(p1, p2, m.rows_list[p1].values_list[p2] + el2)
+
+        def subaS(interpreter, el1, el2):
+            m, p1, p2 = interpreter.evalSelectSingle(el1)
+            m.setSingle(p1, p2, m.rows_list[p1].values_list[p2] - el2)
+
+        def mulaS(interpreter, el1, el2):
+            m, p1, p2 = interpreter.evalSelectSingle(el1)
+            m.setSingle(p1, p2, m.rows_list[p1].values_list[p2] * el2)
+
+        def divaS(interpreter, el1, el2):
+            m, p1, p2 = interpreter.evalSelectSingle(el1)
+            m.setSingle(p1, p2, m.rows_list[p1].values_list[p2] / el2)
+
+        def assigmR(interpreter, el1, el2):
+            m, p = interpreter.evalSelectRow(el1)
+            m.setRow(p, el2)
+
+        def addaR(interpreter, el1, el2):
+            m, p = interpreter.evalSelectRow(el1)
+            m.setRow(p, m.rows_list[p] + el2)
+
+        def subaR(interpreter, el1, el2):
+            m, p = interpreter.evalSelectRow(el1)
+            m.setRow(p, m.rows_list[p] - el2)
+
+        def mulaR(interpreter, el1, el2):
+            m, p = interpreter.evalSelectRow(el1)
+            m.setRow(p, m.rows_list[p] * el2)
+
+        def divaR(interpreter, el1, el2):
+            m, p = interpreter.evalSelectRow(el1)
+            m.setRow(p, m.rows_list[p] / el2)
+
+        OperatorsNormal = {"=": assigm, "+=": adda, "-=": suba, "*=": mula, "/=": diva}
+        OperatorsSelectSingle = {"=": assigmS, "+=": addaS, "-=": subaS, "*=": mulaS, "/=": divaS}
+        OperatorsSelectRow = {"=": assigmR, "+=": addaR, "-=": subaR, "*=": mulaR, "/=": divaR}
+        T = {struc.Variable: OperatorsNormal, struc.SelectionSingle: OperatorsSelectSingle,
+             struc.SelectRow: OperatorsSelectRow}
+
+        def assi(interpreter, el1, el2, operator):
+            el2 = interpreter.visit(el2)
+            if operator == "=" and isinstance(el1, struc.Variable) and not interpreter.memory.has(el1.name):
+                Interpreter.Assignmenter.makeVariable(interpreter, el1, el2)
+            else:
+                Interpreter.Assignmenter.T[type(el1)][operator](interpreter, el1, el2)
+
+    @when(struc.Assignment)
     def visit(self, node):
-        pass
+        Interpreter.Assignmenter.assi(self,node.left,node.right,node.operator)
 
     @when(struc.Print)
     def visit(self, node):

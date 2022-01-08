@@ -161,8 +161,16 @@ class Matrix(Node):
             m.rows_list.append(Row.makeEmpty(columns, value, typ))
         return m
 
-    def getTypeArthmetci(t1,t2):
-        return Matrix.Typ[(t1,t2)]
+    def getTypeArthmetci(t1, t2):
+        return Matrix.Typ[(t1, t2)]
+
+    def setSingle(self, p1, p2, el):
+        self.rows_list[p1].setSingle(p2, el)
+        self.type = Matrix.getTypeArthmetci(self.type, type(el))
+
+    def setRow(self, p, el):
+        self.rows_list[p] = el
+        self.type = Matrix.getTypeArthmetci(self.type, el.typ)
 
     def __le__(self, other):
         for row1, row2 in zip(self.rows_list, other.rows_list):
@@ -210,7 +218,7 @@ class Matrix(Node):
         m = copy.deepcopy(self)
         for x in range(other.rows_amount):
             m.rows_list[x] += other.rows_list[x]
-        m.type=Matrix.getTypeArthmetci(self.type,other.type)
+        m.type = Matrix.getTypeArthmetci(self.type, other.type)
         return m
 
     def __iadd__(self, other):
@@ -290,7 +298,7 @@ class Matrix(Node):
         return m
 
     def __str__(self):
-        s = "["
+        s = "<" + self.type.__name__ + ">:["
         for row in self.rows_list:
             s += str(row) + ','
         return s[:-1] + "]"
@@ -298,6 +306,7 @@ class Matrix(Node):
 
 class Row(Node):
     Typ = {(str, str): str, (int, int): int, (int, float): float, (float, int): float}
+
     def __init__(self, values_list, typ=None):
         self.values_list = values_list
         self.size = len(values_list)
@@ -315,8 +324,12 @@ class Row(Node):
     def makeEmpty(columns, value=0, typ=int):
         return Row(Vector([value for x in range(columns)]), typ)
 
-    def getTypeArthmetci(t1,t2):
-        return Row.Typ[(t1,t2)]
+    def getTypeArthmetci(t1, t2):
+        return Row.Typ[(t1, t2)]
+
+    def setSingle(self, p, el):
+        self.values_list[p] = el
+        self.typ = Row.getTypeArthmetci(self.typ, type(el))
 
     def __le__(self, other):
         for val1, val2 in zip(self.values_list, other.values_list):
@@ -364,7 +377,7 @@ class Row(Node):
         r = copy.deepcopy(self)
         for x in range(other.size):
             r.values_list[x] += other.values_list[x]
-        r.typ = Row.getTypeArthmetci(self.typ,other.typ)
+        r.typ = Row.getTypeArthmetci(self.typ, other.typ)
         return r
 
     def __iadd__(self, other):

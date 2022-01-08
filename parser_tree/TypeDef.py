@@ -37,7 +37,7 @@ def get_type_binary(operator, el1, el2):
     if not isinstance(operator, str) and operator >= 9:
         return None
     if (el1.core_type == Types.CoreTypes.STRING or el2.core_type == Types.CoreTypes.STRING) \
-            and (not (operator == "=" or operator == "+=" or operator == 1) or el1.core_type != el2.core_type):
+            and (not (operator == "=" or operator == "+=" or operator == 1 or operator == 5) or el1.core_type != el2.core_type):
         return None
     return el1.copy_with_type(max(el1.core_type, el2.core_type))
 

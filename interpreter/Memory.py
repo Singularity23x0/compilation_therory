@@ -36,6 +36,12 @@ class MemoryStack:
 
     # gets from memory stack current value of variable <name>
 
+    def has(self,name):
+        for mem in reversed(self.memory):
+            if mem.has_key(name):
+                return True
+        return False
+
     def insert(self, name, value):
         self.memory[-1].put(name, value)
 
