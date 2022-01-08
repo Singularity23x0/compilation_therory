@@ -1,5 +1,6 @@
 import copy
 
+
 class Type:
     def __init__(self, core_type):
         self.core_type = core_type
@@ -21,11 +22,14 @@ class Type:
 
     def details(self):
         return CoreTypes.type_name(self.core_type)
-    
+
     def copy_with_type(self, new_type):
         cp = copy.deepcopy(self)
         cp.core_type = new_type
         return cp
+
+    def comparable_with(self, comparison_operator):
+        return True
 
 
 class GenericType(Type):
@@ -49,6 +53,9 @@ class MatrixType(Type):
     def details(self):
         return CoreTypes.type_name(self.core_type) + " " + str(self.rows) + "x" + str(self.cols)
 
+    def comparable_with(self, comparison_operator):
+        return comparison_operator == "=="
+
 
 class RowType(Type):
     def __init__(self, core_type, size):
@@ -64,6 +71,9 @@ class RowType(Type):
     def details(self):
         return CoreTypes.type_name(self.core_type) + " " + str(self.size)
 
+    def comparable_with(self, comparison_operator):
+        return comparison_operator == "=="
+
 
 class CoreTypes:
     INT = 1
@@ -72,7 +82,7 @@ class CoreTypes:
     T = ["INT", "FLOAT", "STRING"]
 
     def type_name(i):
-        return CoreTypes.T[i-1]
+        return CoreTypes.T[i - 1]
 
 
 def compare_sizes(size1, size2):

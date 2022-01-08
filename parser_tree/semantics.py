@@ -225,7 +225,9 @@ class SemanticChecker:
     def visit_LogicalExpression(self, node):
         typeE1 = self.visit(node.left)
         typeE2 = self.visit(node.right)
-        if not equivalent(typeE1, typeE2):
+        if not equivalent(typeE1, typeE2) or \
+                not typeE1.comparable_with(node.operator) or \
+                not typeE2.comparable_with(node.operator):
             self.errorList.append(node.get_line() + "can not compare types: {0} and {1} with the {2} operator"
                                   .format(typeE1, typeE2, node.operator))
 

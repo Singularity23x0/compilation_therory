@@ -1,3 +1,5 @@
+import math
+
 import parser_tree.structure as struc
 from parser_tree import SymbolTable
 from interpreter.Memory import *
@@ -6,6 +8,17 @@ from interpreter.visit import *
 import sys
 
 sys.setrecursionlimit(10000)
+
+
+def compare_sizes(mtx1, mtx2, operator):
+    if isinstance(mtx1, struc.Matrix):
+        if operator == 3:
+            if mtx1.columns_amount != mtx2.rows_amount:
+                raise ValueError("Incompatible sizes for matrix multiplication")
+        else:
+            if mtx1.columns_amount != mtx2.columns_amount or mtx1.rows_amount != mtx2.rows_amount:
+                raise ValueError("Incompatible sizes for matrix operation - {}x{} and {}x{}"
+                                 .format(mtx1.rows_amount, mtx1.columns_amount, mtx2.rows_amount, mtx2.columns_amount))
 
 
 class Interpreter:
@@ -89,10 +102,16 @@ class Interpreter:
     def visit(self, node):
         return self.memory.get(node.name)
 
-    def evalSelectSingle(self, node):  # TODO add index in range, in function argument too
+    def evalSelectSingle(self, node):
         m = self.visit(node.matrix)
         p1 = self.visit(node.pos1)
         p2 = self.visit(node.pos2)
+        horizontal_size = m.columns_amount
+        vertical_size = m.rows_amount
+        if p1 < 0 or p1 > vertical_size:
+            raise IndexOutOfBounds(p1, 0, vertical_size)
+        if p2 < 0 or p2 > horizontal_size:
+            raise IndexOutOfBounds(p2, 0, horizontal_size)
         return m, p1, p2
 
     @when(struc.SelectionSingle)
@@ -100,9 +119,12 @@ class Interpreter:
         m, p1, p2 = Interpreter.evalSelectSingle(self, node)
         return m.rows_list[p1].values_list[p2]
 
-    def evalSelectRow(self, node):  # TODO add index in range, in function argument too
+    def evalSelectRow(self, node):
         m = self.visit(node.matrix)
         p = self.visit(node.pos)
+        vertical_size = m.rows_amount
+        if p < 0 or p > vertical_size:
+            raise IndexOutOfBounds(p, 0, vertical_size)
         return m, p
 
     @when(struc.SelectRow)
@@ -138,14 +160,16 @@ class Interpreter:
     def visit(self, node):
         print("debugging alert")
 
-    @when(struc.Function)  # TODO argument check
+    @when(struc.Function)
     def visit(self, node):
         argument = self.visit(node.arguments)
+        if argument <= 0 or not isinstance(argument, int):
+            raise ValueError("Invalid function argument " + str(argument))
 
         def make_zero(arg):
             return struc.Matrix.makeEmpty(arg, arg)
 
-        def make_onse(arg):
+        def make_ones(arg):
             return struc.Matrix.makeEmpty(arg, arg, 1)
 
         def make_eye(arg):
@@ -154,10 +178,10 @@ class Interpreter:
                 m.rows_list[i].values_list[i] = 1
             return m
 
-        T = {"eye": make_zero, "ones": make_onse, "zeros": make_eye}
+        T = {"eye": make_eye, "ones": make_ones, "zeros": make_zero}
         return T[node.name](argument)
 
-    class Arithmetic:  # TODO add check for matrix size
+    class Arithmetic:
         def add(el1, el2):
             return el1 + el2
 
@@ -168,17 +192,18 @@ class Interpreter:
             return el1 * el2
 
         def div(el1, el2):
-            return el1 / el2  # TODO add div 0 error
+            return el1 / el2
 
         def mmul(el1, el2):
             return struc.Matrix.mmul(el1, el2)
 
         def mdiv(el1, el2):
-            return struc.Matrix.mdiv(el1, el2)  # TODO add div 0 error
+            return struc.Matrix.mdiv(el1, el2)
 
         Operators = [0, add, sub, mul, div, add, sub, mmul, mdiv]
 
         def calculate(el1, el2, operator):
+            compare_sizes(el1, el2, operator)  # 7 8
             return Interpreter.Arithmetic.Operators[operator](el1, el2)
 
     @when(struc.ArithmeticExpressionBinary)
@@ -194,7 +219,7 @@ class Interpreter:
         else:
             return -self.visit(node.element)
 
-    class Comparator:  # TODO add check for matrix size
+    class Comparator:
         def le(el1, el2):
             return el1 <= el2
 
@@ -202,6 +227,8 @@ class Interpreter:
             return el1 >= el2
 
         def eq(el1, el2):
+            if isinstance(el1, struc.Matrix):
+                return el1.rows_list == el2.rows_list
             return el1 == el2
 
         def ne(el1, el2):

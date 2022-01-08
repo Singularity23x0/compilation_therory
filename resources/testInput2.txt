@@ -1,4 +1,5 @@
 a = 2;
+f = zeros(21);
 qwe = [[1]];
 qwe[0] += [2];
 print 2*4+5/16+(8-4)*4;
@@ -45,3 +46,24 @@ w2 = [
 ];
 print w1 * w2;
 q = 12;
+
+A = 5;
+t1 = [
+    [0, 0],
+    [0, 0]
+];
+t2 = [
+    [1, 2],
+    [3, 0]
+];
+t3 = [
+    [1, 2, 3],
+    [4, 5, 6]
+];
+print "\n";
+print eye(2);
+if (t1 == zeros(2)) print "\ntak";
+if (t1 == t2) print "\nNO!";
+print t1 + t2;
+print "\n";
+if( t1 == zeros(A)) print "\nLOL";
