@@ -228,12 +228,10 @@ class Interpreter:
             return el1 >= el2
 
         def eq(el1, el2):
-            if isinstance(el1, struc.Matrix):
-                return el1.rows_list == el2.rows_list
             return el1 == el2
 
         def ne(el1, el2):
-            return not Interpreter.Comparator.eq(el1, el2)
+            return el1 != el2
 
         def lt(el1, el2):
             return el1 < el2

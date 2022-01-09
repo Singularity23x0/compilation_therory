@@ -72,7 +72,7 @@ class RowType(Type):
         return CoreTypes.type_name(self.core_type) + " " + str(self.size)
 
     def comparable_with(self, comparison_operator):
-        return comparison_operator == "=="
+        return comparison_operator in ["==", "!="]
 
 
 class CoreTypes:
@@ -100,9 +100,7 @@ def is_matrix(obj):
 def equivalent(type1, type2):
     if type1 is None or type2 is None:
         return False
-    return type1.structure_equivalent(type2) and \
-           type2.structure_equivalent(type1) and \
-           core_types_compatible(type1.core_type, type2.core_type)
+    return type1.structure_equivalent(type2) and type2.structure_equivalent(type1) and core_types_compatible(type1.core_type, type2.core_type)
 
 
 def equal(type1, type2):
