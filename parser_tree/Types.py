@@ -54,7 +54,7 @@ class MatrixType(Type):
         return CoreTypes.type_name(self.core_type) + " " + str(self.rows) + "x" + str(self.cols)
 
     def comparable_with(self, comparison_operator):
-        return comparison_operator == "=="
+        return comparison_operator in ["==", "!="]
 
 
 class RowType(Type):

@@ -1,4 +1,5 @@
 import math
+from typing import Union
 
 import parser_tree.structure as struc
 from parser_tree import SymbolTable
@@ -39,9 +40,9 @@ class Interpreter:
         self.memory.push(Memory("Block"))
         try:
             self.visit(node.segment)
-        except ReturnException as err:
+        except BaseException as err:
             if node.prime:
-                return err.val
+                return str(err)
             else:
                 raise err
         finally:
@@ -232,7 +233,7 @@ class Interpreter:
             return el1 == el2
 
         def ne(el1, el2):
-            return el1 != el2
+            return not Interpreter.Comparator.eq(el1, el2)
 
         def lt(el1, el2):
             return el1 < el2
