@@ -32,4 +32,4 @@ if __name__ == '__main__':
             print(err)
         if len(S.errorList) == 0:
             inter = Interpreter()
-            print("\n\n:: Caught errors: {}".format(inter.visit(tree_structure)))
+            inter.interpret(tree_structure)

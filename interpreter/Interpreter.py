@@ -26,6 +26,14 @@ class Interpreter:
     def __init__(self):
         self.memory = MemoryStack(None)
 
+    def interpret(self, root):
+        try:
+            return_value = self.visit(root)
+            if return_value is not None:
+                print("\n\nThe program returned: {}\n\n".format(return_value))
+        except BaseException as e:
+            print("\n\nError::{}\n\n".format(e))
+
     @on('node')
     def visit(self, node):
         pass
@@ -40,9 +48,9 @@ class Interpreter:
         self.memory.push(Memory("Block"))
         try:
             self.visit(node.segment)
-        except BaseException as err:
+        except ReturnException as err:
             if node.prime:
-                return str(err)
+                return err.val
             else:
                 raise err
         finally:
@@ -109,9 +117,9 @@ class Interpreter:
         p2 = self.visit(node.pos2)
         horizontal_size = m.columns_amount
         vertical_size = m.rows_amount
-        if p1 < 0 or p1 > vertical_size:
+        if p1 < 0 or p1 >= vertical_size:
             raise IndexOutOfBounds(p1, 0, vertical_size)
-        if p2 < 0 or p2 > horizontal_size:
+        if p2 < 0 or p2 >= horizontal_size:
             raise IndexOutOfBounds(p2, 0, horizontal_size)
         return m, p1, p2
 
@@ -124,7 +132,7 @@ class Interpreter:
         m = self.visit(node.matrix)
         p = self.visit(node.pos)
         vertical_size = m.rows_amount
-        if p < 0 or p > vertical_size:
+        if p < 0 or p >= vertical_size:
             raise IndexOutOfBounds(p, 0, vertical_size)
         return m, p
 
@@ -164,7 +172,7 @@ class Interpreter:
     @when(struc.Function)
     def visit(self, node):
         argument = self.visit(node.arguments)
-        if argument <= 0 or not isinstance(argument, int):
+        if argument <= 0:
             raise ValueError("Invalid function argument " + str(argument))
 
         def make_zero(arg):
@@ -332,10 +340,7 @@ class Interpreter:
         k = 0
         for val in node.vector:
             k += 1
-            if i == k:
-                print(self.visit(val), end="")
-            else:
-                print(self.visit(val), end=" ")
+            print(self.visit(val), end="" if i == k else " ")
 
     @when(struc.Return)
     def visit(self, node):

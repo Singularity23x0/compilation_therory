@@ -298,10 +298,10 @@ class Matrix(Node):
         return m
 
     def __str__(self):
-        s = "<" + self.type.__name__ + ">:["
+        s = "<" + self.type.__name__ + ">:[\n"
         for row in self.rows_list:
-            s += str(row) + ','
-        return s[:-1] + "]"
+            s += " " + str(row) + ',\n'
+        return s[:-2] + "]"
 
 
 class Row(Node):
