@@ -11,17 +11,6 @@ import sys
 sys.setrecursionlimit(10000)
 
 
-def compare_sizes(mtx1, mtx2, operator):
-    if isinstance(mtx1, struc.Matrix):
-        if operator == 3:
-            if mtx1.columns_amount != mtx2.rows_amount:
-                raise ValueError("Incompatible sizes for matrix multiplication")
-        else:
-            if mtx1.columns_amount != mtx2.columns_amount or mtx1.rows_amount != mtx2.rows_amount:
-                raise ValueError("Incompatible sizes for matrix operation - {}x{} and {}x{}"
-                                 .format(mtx1.rows_amount, mtx1.columns_amount, mtx2.rows_amount, mtx2.columns_amount))
-
-
 class Interpreter:
     def __init__(self):
         self.memory = MemoryStack(None)
@@ -118,9 +107,9 @@ class Interpreter:
         horizontal_size = m.columns_amount
         vertical_size = m.rows_amount
         if p1 < 0 or p1 >= vertical_size:
-            raise IndexOutOfBounds(p1, 0, vertical_size)
+            raise IndexOutOfBounds(node.get_line(), p1, 0, vertical_size)
         if p2 < 0 or p2 >= horizontal_size:
-            raise IndexOutOfBounds(p2, 0, horizontal_size)
+            raise IndexOutOfBounds(node.get_line(), p2, 0, horizontal_size)
         return m, p1, p2
 
     @when(struc.SelectionSingle)
@@ -133,7 +122,7 @@ class Interpreter:
         p = self.visit(node.pos)
         vertical_size = m.rows_amount
         if p < 0 or p >= vertical_size:
-            raise IndexOutOfBounds(p, 0, vertical_size)
+            raise IndexOutOfBounds(node.get_line(), p, 0, vertical_size)
         return m, p
 
     @when(struc.SelectRow)
@@ -173,7 +162,7 @@ class Interpreter:
     def visit(self, node):
         argument = self.visit(node.arguments)
         if argument <= 0:
-            raise ValueError("Invalid function argument " + str(argument))
+            raise ValueError(node.get_line() + "Invalid function argument " + str(argument))
 
         def make_zero(arg):
             return struc.Matrix.makeEmpty(arg, arg)
@@ -212,14 +201,18 @@ class Interpreter:
         Operators = [0, add, sub, mul, div, add, sub, mmul, mdiv]
 
         def calculate(el1, el2, operator):
-            compare_sizes(el1, el2, operator)  # 7 8
             return Interpreter.Arithmetic.Operators[operator](el1, el2)
 
     @when(struc.ArithmeticExpressionBinary)
     def visit(self, node):
         left = self.visit(node.left)
         right = self.visit(node.right)
-        return Interpreter.Arithmetic.calculate(left, right, node.operator)
+        try:
+            return Interpreter.Arithmetic.calculate(left, right, node.operator)
+        except ValueError as err:
+            raise ValueError(node.get_line() + str(err)) from err
+        except ZeroDivisionError as err:
+            raise ValueError(node.get_line() + str(err)) from err
 
     @when(struc.ArithmeticExpressionUnary)
     def visit(self, node):
@@ -332,7 +325,12 @@ class Interpreter:
 
     @when(struc.Assignment)
     def visit(self, node):
-        Interpreter.Assignmenter.assi(self,node.left,node.right,node.operator)
+        try:
+            Interpreter.Assignmenter.assi(self,node.left,node.right,node.operator)
+        except ValueError as err:
+            raise ValueError(node.get_line() + str(err)) from err
+        except ZeroDivisionError as err:
+            raise ValueError(node.get_line() + str(err)) from err
 
     @when(struc.Print)
     def visit(self, node):

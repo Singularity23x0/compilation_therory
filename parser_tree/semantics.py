@@ -161,6 +161,8 @@ class SemanticChecker:
                     typeTmp.core_type = max(typeM.core_type, typeTmp.core_type)
                 typeM = typeTmp
                 size = typeTmp.get_size()
+        if node.rows_amount is None or node.columns_amount is None:
+            any_errors = True
         return None if any_errors else MatrixType(typeM.core_type, node.rows_amount, node.columns_amount)
 
     def visit_Row(self, node):

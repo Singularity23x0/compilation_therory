@@ -171,6 +171,11 @@ class Matrix(Node):
     def setRow(self, p, el):
         self.rows_list[p] = el
         self.type = Matrix.getTypeArthmetci(self.type, el.typ)
+        
+    def compare_sizes(self, other):
+        if self.columns_amount != other.columns_amount or self.rows_amount != other.rows_amount:
+            raise ValueError("Incompatible sizes for matrix operation - {}x{} and {}x{}"
+                             .format(self.rows_amount, self.columns_amount, other.rows_amount, other.columns_amount))
 
     def __le__(self, other):
         for row1, row2 in zip(self.rows_list, other.rows_list):
@@ -192,9 +197,9 @@ class Matrix(Node):
 
     def __ne__(self, other):
         for row1, row2 in zip(self.rows_list, other.rows_list):
-            if not row1 != row2:
-                return False
-        return True
+            if not row1 == row2:
+                return True
+        return False
 
     def __lt__(self, other):
         for row1, row2 in zip(self.rows_list, other.rows_list):
@@ -215,6 +220,7 @@ class Matrix(Node):
         return m
 
     def __add__(self, other):
+        self.compare_sizes(other)
         m = copy.deepcopy(self)
         for x in range(other.rows_amount):
             m.rows_list[x] += other.rows_list[x]
@@ -222,12 +228,14 @@ class Matrix(Node):
         return m
 
     def __iadd__(self, other):
+        self.compare_sizes(other)
         for x in other.rows_amount:
             self.rows_list[x] += other.rows_list[x]
         self.type = Matrix.getTypeArthmetci(self.type, other.type)
         return self
 
     def __sub__(self, other):
+        self.compare_sizes(other)
         m = copy.deepcopy(self)
         for x in range(other.rows_amount):
             m.rows_list[x] -= other.rows_list[x]
@@ -235,12 +243,14 @@ class Matrix(Node):
         return m
 
     def __isub__(self, other):
+        self.compare_sizes(other)
         for x in other.rows_amount:
             self.rows_list[x] -= other.rows_list[x]
         self.type = Matrix.getTypeArthmetci(self.type, other.type)
         return self
 
     def mmul(self, other):
+        self.compare_sizes(other)
         m = copy.deepcopy(self)
         for x in range(other.rows_amount):
             Row.immul(m.rows_list[x], other.rows_list[x])
@@ -248,12 +258,14 @@ class Matrix(Node):
         return m
 
     def immul(self, other):
+        self.compare_sizes(other)
         for x in other.rows_amount:
             Row.immul(self.rows_list[x], other.rows_list[x])
         self.type = Matrix.getTypeArthmetci(self.type, other.type)
         return self
 
     def mdiv(self, other):
+        self.compare_sizes(other)
         m = copy.deepcopy(self)
         for x in range(other.rows_amount):
             Row.imdiv(m.rows_list[x], other.rows_list[x])
@@ -261,12 +273,15 @@ class Matrix(Node):
         return m
 
     def imdiv(self, other):
+        self.compare_sizes(other)
         for x in other.rows_amount:
             Row.imdiv(self.rows_list[x], other.rows_list[x])
         self.type = float
         return self
 
     def __mul__(self, other):
+        if self.columns_amount != other.rows_amount:
+            raise ValueError("Incompatible sizes for matrix multiplication")
         m = Matrix.makeEmpty(self.rows_amount, other.columns_amount)
         for i in range(self.rows_amount):
             for j in range(other.columns_amount):
@@ -277,6 +292,8 @@ class Matrix(Node):
         return m
 
     def __imul__(self, other):
+        if self.columns_amount != other.rows_amount:
+            raise ValueError("Incompatible sizes for matrix multiplication")
         m = Matrix.makeEmpty(self.rows_amount, other.columns_amount)
         for i in range(self.rows_amount):
             for j in range(other.columns_amount):

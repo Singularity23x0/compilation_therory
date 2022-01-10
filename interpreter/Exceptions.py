@@ -17,6 +17,12 @@ class ReturnException(Exception):
 
 
 class IndexOutOfBounds(Exception):
-    def __init__(self, index, lower_bound, upper_bound):
-        self.val = "Index {} out of bounds for range {}:{}".format(index, lower_bound, upper_bound)
+    def __init__(self, line, index, lower_bound, upper_bound):
+        self.line = line
+        self.index = index
+        self.lower_bound = lower_bound
+        self.upper_bound = upper_bound
+
+    def __str__(self):
+        return "{}Index {} out of bounds for range {}:{}".format(self.line, self.index, self.lower_bound, self.upper_bound)
 

@@ -1,7 +1,7 @@
-A=zeros(10);
+A=eye(10);
 for i = 0:9{
     for j = 0:9{
-        k=A[1,2];
+        k=A[i,j];
         print k," ";
         }
     print "\n";
