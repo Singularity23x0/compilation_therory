@@ -45,3 +45,4 @@ w2 = [
 ];
 print w1 * w2;
 q = 12;
+return 5;
