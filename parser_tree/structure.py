@@ -190,12 +190,16 @@ class Matrix(Node):
         return True
 
     def __eq__(self, other):
+        if self.columns_amount != other.columns_amount or self.rows_amount != other.rows_amount:
+            return False
         for row1, row2 in zip(self.rows_list, other.rows_list):
             if not row1 == row2:
                 return False
         return True
 
     def __ne__(self, other):
+        if self.columns_amount != other.columns_amount or self.rows_amount != other.rows_amount:
+            return True
         for row1, row2 in zip(self.rows_list, other.rows_list):
             if not row1 == row2:
                 return True
